@@ -1,3 +1,5 @@
+use regex::Regex;
+
 // struct Tegoma {
 //     koma: Vec<i8>,
 // }
@@ -12,13 +14,25 @@ pub struct Sfen {
 fn extractdan(txt: &str) -> String {
     let mut res = String::from("|");
     let masu = txt.chars();
+    let mut promote = ' ';
+    let resente = Regex::new("[PLNSGBRK]").unwrap();
+    let regote = Regex::new("[plnsgbrk]").unwrap();
     for ch in masu {
         match ch {
             '1'..='9' => {
                 res = res
-                    + &std::iter::repeat(" ")
+                    + &std::iter::repeat("  ")
                         .take(ch.to_digit(10).unwrap() as usize)
                         .collect::<String>()
+            }
+            '+' => promote = '+',
+            ch if resente.is_match(&ch.to_string()) => {
+                res = res + &promote.to_string() + &ch.to_string();
+                promote = ' ';
+            }
+            ch if regote.is_match(&ch.to_string()) => {
+                res = res + &promote.to_string() + &ch.to_string();
+                promote = ' ';
             }
             _ => res = res + &ch.to_string(),
         }
