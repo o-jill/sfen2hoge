@@ -9,6 +9,23 @@ pub struct Sfen {
     nteme: i32,
 }
 
+fn extractdan(txt: &str) -> String {
+    let mut res = String::from("|");
+    let masu = txt.chars();
+    for ch in masu {
+        match ch {
+            '1'..='9' => {
+                res = res
+                    + &std::iter::repeat(" ")
+                        .take(ch.to_digit(10).unwrap() as usize)
+                        .collect::<String>()
+            }
+            _ => res = res + &ch.to_string(),
+        }
+    }
+    res + "|"
+}
+
 impl Sfen {
     pub fn new(text: &str) -> Sfen {
         let e: Vec<&str> = text.split(" ").collect();
@@ -24,7 +41,7 @@ impl Sfen {
         let mut res = String::new();
         let vdan: Vec<&str> = self.ban.split("/").collect();
         for e in vdan {
-            res = res + &e.to_string() + "\n";
+            res = res + &extractdan(e) + "\n";
         }
         res
     }
