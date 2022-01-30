@@ -88,8 +88,9 @@ impl Sfen {
             }
         }
         match extracttegoma(&self.tegoma) {
-            Ok((sentegoma, gotegoma)) =>
-            res = format!("gote:{}\n{}sente:{}\n", gotegoma, res, sentegoma),
+            Ok((sentegoma, gotegoma)) => {
+                res = format!("gote:{}\n{}sente:{}\n", gotegoma, res, sentegoma)
+            }
             Err(msg) => return format!("error in [{}]:{}", self.tegoma, msg),
         }
         res
