@@ -11,28 +11,42 @@ pub struct Sfen {
     nteme: i32,
 }
 
+#[derive(PartialEq, Debug)]
+enum Promote {
+    None,
+    Promoted,
+}
+
+fn p2fu(piece: char, promote: Promote) -> String {
+    let idx = "plnsgbrk".find(piece).unwrap_or(7);
+    if promote == Promote::Promoted {
+        return "と杏圭全金馬龍王？".chars().nth(idx).unwrap().to_string();
+    }
+    "歩香桂銀金角飛王？".chars().nth(idx).unwrap().to_string()
+}
+
 fn extractdan(txt: &str) -> Result<String, String> {
     let mut res = String::from("|");
     let masu = txt.chars();
-    let mut promote = ' ';
+    let mut promote = Promote::None;
     let resente = Regex::new("[PLNSGBRK]").unwrap();
     let regote = Regex::new("[plnsgbrk]").unwrap();
     for ch in masu {
         match ch {
             '1'..='9' => {
                 res = res
-                    + &std::iter::repeat("  ")
+                    + &std::iter::repeat("   ")
                         .take(ch.to_digit(10).unwrap() as usize)
                         .collect::<String>()
             }
-            '+' => promote = '+',
+            '+' => promote = Promote::Promoted,
             ch if resente.is_match(&ch.to_string()) => {
-                res = res + &promote.to_string() + &ch.to_string();
-                promote = ' ';
+                res = res + " " + &p2fu(ch.to_ascii_lowercase(), promote);
+                promote = Promote::None;
             }
             ch if regote.is_match(&ch.to_string()) => {
-                res = res + &promote.to_string() + &ch.to_string();
-                promote = ' ';
+                res = res + "v" + &p2fu(ch, promote);
+                promote = Promote::None;
             }
             _ => return Err(format!("{} is not allowed to use!!", ch)),
         }
