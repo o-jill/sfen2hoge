@@ -65,7 +65,12 @@ fn extracttegoma(txt: &str) -> Result<(String, String), String> {
             '1'..='9' => num = num * 10 + ch.to_digit(10).unwrap(),
             ch if resente.is_match(&ch.to_string()) => {
                 sentegoma = sentegoma
-                    + &p2fu(ch.to_ascii_lowercase(), Promote::None).repeat(if num < 0 { 1 } else { num } as usize);
+                    + &p2fu(ch.to_ascii_lowercase(), Promote::None).repeat(if num < 0 {
+                        1
+                    } else {
+                        num
+                    }
+                        as usize);
                 num = 0;
             }
             ch if regote.is_match(&ch.to_string()) => {
