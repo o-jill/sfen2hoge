@@ -18,7 +18,7 @@ enum Promote {
 }
 
 fn p2fu(piece: char, promote: Promote) -> String {
-    let idx = "plnsgbrk".find(piece).unwrap_or(7);
+    let idx = "plnsgbrk".find(piece).unwrap_or(8);
     if promote == Promote::Promoted {
         return "と杏圭全金馬龍王？".chars().nth(idx).unwrap().to_string();
     }
@@ -64,15 +64,13 @@ fn extracttegoma(txt: &str) -> Result<(String, String), String> {
         match ch {
             '1'..='9' => num = num * 10 + ch.to_digit(10).unwrap(),
             ch if resente.is_match(&ch.to_string()) => {
-                if num == 0 {
-                    num = 1
-                };
-                sentegoma = sentegoma + &String::from_utf8(vec![ch as u8; num as usize]).unwrap();
+                sentegoma = sentegoma
+                    + &p2fu(ch.to_ascii_lowercase(), Promote::None).repeat(if num < 0 { 1 } else { num } as usize);
                 num = 0;
             }
             ch if regote.is_match(&ch.to_string()) => {
-                gotegoma = gotegoma + &String::from_utf8(vec![ch as u8; num as usize]).unwrap();
-
+                gotegoma = gotegoma
+                    + &p2fu(ch, Promote::None).repeat(if num < 0 { 1 } else { num } as usize);
                 num = 0;
             }
             '-' => return Ok((String::new(), String::new())),
