@@ -20,9 +20,9 @@ enum Promote {
 fn p2fu(piece: char, promote: Promote) -> String {
     let idx = "plnsgbrk".find(piece).unwrap_or(8);
     if promote == Promote::Promoted {
-        return "と杏圭全金馬龍王？".chars().nth(idx).unwrap().to_string();
+        return "と杏圭全金馬龍玉？".chars().nth(idx).unwrap().to_string();
     }
-    "歩香桂銀金角飛王？".chars().nth(idx).unwrap().to_string()
+    "歩香桂銀金角飛玉？".chars().nth(idx).unwrap().to_string()
 }
 
 fn extractdan(txt: &str) -> Result<String, String> {
