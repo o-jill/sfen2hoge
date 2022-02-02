@@ -95,6 +95,21 @@ impl Sfen {
             nteme: e[3].parse().unwrap_or(-1),
         }
     }
+    fn tebanexp(&self) -> Result<String, String> {
+        if self.teban == "b" {
+            return Ok(String::from("先手の番です。"));
+        }
+        if self.teban == "w" {
+            return Ok(String::from("後手の番です。"));
+        }
+        if self.teban == "fb" {
+            return Ok(String::from("先手の勝ちです。"));
+        }
+        if self.teban == "fw" {
+            return Ok(String::from("後手の勝ちです。"));
+        }
+        Err(format!("{} is invalid teban expression.", self.teban))
+    }
     pub fn dump(&self) -> String {
         let mut res = String::new();
         let vdan: Vec<&str> = self.ban.split("/").collect();
@@ -110,6 +125,11 @@ impl Sfen {
             }
             Err(msg) => return format!("error in [{}]:{}", self.tegoma, msg),
         }
-        res + &format!("{}手目まで", self.nteme - 1)
+        match self.tebanexp() {
+            Ok(msg) => {
+                return res + &format!("手数＝{}　{}", self.nteme, msg);
+            }
+            Err(msg) => msg,
+        }
     }
 }
