@@ -54,6 +54,17 @@ fn extractdan(txt: &str) -> Result<String, String> {
     Ok(res + "|")
 }
 
+fn kanjinum(num: usize) -> Result<String, String> {
+    let kanji = [
+        "", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三",
+        "十四", "十五", "十六", "十七", "十八",
+    ];
+    if num > 18 {
+        return Err(String::from("??"));
+    }
+    Ok(String::from(kanji[num]))
+}
+
 fn extracttegoma(txt: &str) -> Result<(String, String), String> {
     let resente = Regex::new("[PLNSGBRK]").unwrap();
     let regote = Regex::new("[plnsgbrk]").unwrap();
@@ -65,17 +76,14 @@ fn extracttegoma(txt: &str) -> Result<(String, String), String> {
             '1'..='9' => num = num * 10 + ch.to_digit(10).unwrap(),
             ch if resente.is_match(&ch.to_string()) => {
                 sentegoma = sentegoma
-                    + &p2fu(ch.to_ascii_lowercase(), Promote::None).repeat(if num < 0 {
-                        1
-                    } else {
-                        num
-                    }
-                        as usize);
+                    + &p2fu(ch.to_ascii_lowercase(), Promote::None)
+                    + &kanjinum(num as usize).unwrap();
                 num = 0;
             }
             ch if regote.is_match(&ch.to_string()) => {
                 gotegoma = gotegoma
-                    + &p2fu(ch, Promote::None).repeat(if num < 0 { 1 } else { num } as usize);
+                    + &p2fu(ch, Promote::None)
+                    + &kanjinum(num as usize).unwrap();
                 num = 0;
             }
             '-' => return Ok((String::new(), String::new())),
@@ -121,7 +129,10 @@ impl Sfen {
         }
         match extracttegoma(&self.tegoma) {
             Ok((sentegoma, gotegoma)) => {
-                res = format!("gote:{}\n{}sente:{}\n", gotegoma, res, sentegoma)
+                res = format!(
+                    "後手の持駒：{}\n{}先手の持駒：{}\n",
+                    gotegoma, res, sentegoma
+                )
             }
             Err(msg) => return format!("error in [{}]:{}", self.tegoma, msg),
         }
