@@ -118,11 +118,12 @@ impl Sfen {
     }
     pub fn dump(&self) -> String {
         let border = "+---------------------------+\n";
-        let mut res = String::from(border);
+        let dannum = "一二三四五六七八九";
+        let mut res = format!("  ９ ８ ７ ６ ５ ４ ３ ２ １\n{}", border);
         let vdan: Vec<&str> = self.ban.split("/").collect();
-        for e in vdan {
+        for (i, e) in vdan.iter().enumerate() {
             match extractdan(e) {
-                Ok(ret) => res = res + &ret + "\n",
+                Ok(ret) => res = res + &ret + &dannum.chars().nth(i).unwrap().to_string() + "\n",
                 Err(msg) => return format!("error in [{}]:{}", e, msg),
             }
         }
