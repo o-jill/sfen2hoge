@@ -117,7 +117,8 @@ impl Sfen {
         Err(format!("{} is invalid teban expression.", self.teban))
     }
     pub fn dump(&self) -> String {
-        let mut res = String::new();
+        let border = "+---------------------------+\n";
+        let mut res = String::from(border);
         let vdan: Vec<&str> = self.ban.split("/").collect();
         for e in vdan {
             match extractdan(e) {
@@ -128,8 +129,8 @@ impl Sfen {
         match extracttegoma(&self.tegoma) {
             Ok((sentegoma, gotegoma)) => {
                 res = format!(
-                    "後手の持駒：{}\n{}先手の持駒：{}\n",
-                    gotegoma, res, sentegoma
+                    "後手の持駒：{}\n{}{}先手の持駒：{}\n",
+                    gotegoma, res, border, sentegoma
                 )
             }
             Err(msg) => return format!("error in [{}]:{}", self.tegoma, msg),
