@@ -35,7 +35,7 @@ fn extractdan(txt: &str) -> Result<String, String> {
         match ch {
             '1'..='9' => {
                 res = res
-                    + &std::iter::repeat("   ")
+                    + &std::iter::repeat(" ・")
                         .take(ch.to_digit(10).unwrap() as usize)
                         .collect::<String>()
             }
