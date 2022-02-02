@@ -110,6 +110,6 @@ impl Sfen {
             }
             Err(msg) => return format!("error in [{}]:{}", self.tegoma, msg),
         }
-        res
+        res + &format!("{}手目まで", self.nteme - 1)
     }
 }
