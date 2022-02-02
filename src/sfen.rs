@@ -81,9 +81,7 @@ fn extracttegoma(txt: &str) -> Result<(String, String), String> {
                 num = 0;
             }
             ch if regote.is_match(&ch.to_string()) => {
-                gotegoma = gotegoma
-                    + &p2fu(ch, Promote::None)
-                    + &kanjinum(num as usize).unwrap();
+                gotegoma = gotegoma + &p2fu(ch, Promote::None) + &kanjinum(num as usize).unwrap();
                 num = 0;
             }
             '-' => return Ok((String::new(), String::new())),
