@@ -17,6 +17,32 @@ enum Promote {
     Promoted,
 }
 
+pub struct Tegoma {
+    koma: char, // plnsgbrk
+    num: usize,
+}
+
+impl Tegoma {
+    pub fn new(p: char, n: usize) -> Tegoma {
+        Tegoma { koma: p, num: n }
+    }
+    pub fn to_kanji(&self) -> Result<String, String> {
+        let kanji = p2fu(self.koma, Promote::None);
+        let kanjinum = [
+            "", "", /*"一"*/
+            "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四",
+            "十五", "十六", "十七", "十八",
+        ];
+        if self.num > 18 {
+            return Err(kanji + &String::from("??"));
+        }
+        if self.num == 0 {
+            return Ok(String::new());
+        }
+        Ok(kanji + &kanjinum[self.num])
+    }
+}
+
 fn p2fu(piece: char, promote: Promote) -> String {
     let idx = "plnsgbrk".find(piece).unwrap_or(8);
     if promote == Promote::Promoted {
@@ -54,44 +80,6 @@ fn extractdan(txt: &str) -> Result<String, String> {
     Ok(res + "|")
 }
 
-fn kanjinum(num: usize) -> Result<String, String> {
-    let kanji = [
-        "", "", /*"一"*/
-        "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四",
-        "十五", "十六", "十七", "十八",
-    ];
-    if num > 18 {
-        return Err(String::from("??"));
-    }
-    Ok(String::from(kanji[num]))
-}
-
-fn extracttegoma(txt: &str) -> Result<(String, String), String> {
-    let resente = Regex::new("[PLNSGBRK]").unwrap();
-    let regote = Regex::new("[plnsgbrk]").unwrap();
-    let mut sentegoma = String::new();
-    let mut gotegoma = String::new();
-    let mut num = 0;
-    for ch in txt.chars() {
-        match ch {
-            '1'..='9' => num = num * 10 + ch.to_digit(10).unwrap(),
-            ch if resente.is_match(&ch.to_string()) => {
-                sentegoma = sentegoma
-                    + &p2fu(ch.to_ascii_lowercase(), Promote::None)
-                    + &kanjinum(num as usize).unwrap();
-                num = 0;
-            }
-            ch if regote.is_match(&ch.to_string()) => {
-                gotegoma = gotegoma + &p2fu(ch, Promote::None) + &kanjinum(num as usize).unwrap();
-                num = 0;
-            }
-            '-' => return Ok((String::new(), String::new())),
-            _ => return Err(format!("{} is not allowed to use!!", ch)),
-        }
-    }
-    Ok((sentegoma, gotegoma))
-}
-
 impl Sfen {
     pub fn new(text: &str) -> Sfen {
         let e: Vec<&str> = text.split(" ").collect();
@@ -117,6 +105,32 @@ impl Sfen {
         }
         Err(format!("{} is invalid teban expression.", self.teban))
     }
+
+    fn extracttegoma(&self) -> Result<(Vec<Tegoma>, Vec<Tegoma>), String> {
+        let resente = Regex::new("[PLNSGBRK]").unwrap();
+        let regote = Regex::new("[plnsgbrk]").unwrap();
+        let mut sentegoma = Vec::new();
+        let mut gotegoma = Vec::new();
+        let mut num = 0;
+        for ch in self.tegoma.chars() {
+            match ch {
+                '1'..='9' => num = num * 10 + ch.to_digit(10).unwrap(),
+                ch if resente.is_match(&ch.to_string()) => {
+                    sentegoma.push(Tegoma::new(ch.to_ascii_lowercase(), num as usize));
+                    num = 0;
+                }
+                ch if regote.is_match(&ch.to_string()) => {
+                    gotegoma.push(Tegoma::new(ch, num as usize));
+                    // gotegoma = gotegoma + &p2fu(ch, Promote::None) + &kanjinum(num as usize).unwrap();
+                    num = 0;
+                }
+                '-' => break,
+                _ => return Err(format!("{} is not allowed to use!!", ch)),
+            }
+        }
+        Ok((sentegoma, gotegoma))
+    }
+
     pub fn dump(&self) -> String {
         let border = "+---------------------------+\n";
         let dannum = "一二三四五六七八九";
@@ -128,11 +142,21 @@ impl Sfen {
                 Err(msg) => return format!("error in [{}]:{}", e, msg),
             }
         }
-        match extracttegoma(&self.tegoma) {
+        match self.extracttegoma() {
             Ok((sentegoma, gotegoma)) => {
+                let tgmsen = sentegoma
+                    .iter()
+                    .map(|t| t.to_kanji().unwrap())
+                    .collect::<Vec<String>>()
+                    .join("");
+                let tgmgo = gotegoma
+                    .iter()
+                    .map(|t| t.to_kanji().unwrap())
+                    .collect::<Vec<String>>()
+                    .join("");
                 res = format!(
                     "後手の持駒：{}\n{}{}先手の持駒：{}\n",
-                    gotegoma, res, border, sentegoma
+                    tgmgo, res, border, tgmsen
                 )
             }
             Err(msg) => return format!("error in [{}]:{}", self.tegoma, msg),
