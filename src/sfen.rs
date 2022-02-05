@@ -11,7 +11,27 @@ pub struct Sfen {
     nteme: i32,
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone, Copy)]
+pub enum Teban {
+    Sente,
+    Gote,
+    None,
+}
+
+#[derive(PartialEq, Debug, Clone, Copy)]
+pub enum KomaType {
+    Aki,
+    Fu,
+    Kyosha,
+    Keima,
+    Gin,
+    Kin,
+    Kaku,
+    Hisha,
+    Gyoku,
+}
+
+#[derive(PartialEq, Debug, Clone, Copy)]
 pub enum Promote {
     None,
     Promoted,
@@ -20,6 +40,69 @@ pub enum Promote {
 impl Promote {
     pub fn is_promoted(&self) -> bool {
         *self == Promote::Promoted
+    }
+}
+
+#[derive(Clone)]
+pub struct Koma {
+    koma: KomaType,
+    promoted: Promote,
+    teban: Teban,
+}
+
+impl Koma {
+    pub fn from(ch: char, promote: Promote) -> Koma {
+        let idx = "plnsgbrk".find(ch.to_ascii_lowercase()).unwrap_or(8);
+        Koma {
+            koma: [
+                KomaType::Fu,
+                KomaType::Kyosha,
+                KomaType::Keima,
+                KomaType::Gin,
+                KomaType::Kin,
+                KomaType::Kaku,
+                KomaType::Hisha,
+                KomaType::Gyoku,
+                KomaType::Aki,
+            ][idx],
+            promoted: promote,
+            teban: if ch.is_uppercase() {
+                Teban::Sente
+            } else {
+                Teban::Gote
+            },
+        }
+    }
+
+    pub fn to_string(&self) -> String {
+        if self.teban == Teban::None || self.koma == KomaType::Aki {
+            return String::from(" ・");
+        }
+        let idx = [
+            KomaType::Fu,
+            KomaType::Kyosha,
+            KomaType::Keima,
+            KomaType::Gin,
+            KomaType::Kin,
+            KomaType::Kaku,
+            KomaType::Hisha,
+            KomaType::Gyoku,
+            KomaType::Aki,
+        ]
+        .iter()
+        .position(|&k| k == self.koma)
+        .unwrap();
+
+        String::from(if self.teban == Teban::Sente { " " } else { "v" })
+            + &if self.promoted.is_promoted() {
+                "と杏圭全金馬龍玉？"
+            } else {
+                "歩香桂銀金角飛玉？"
+            }
+            .chars()
+            .nth(idx)
+            .unwrap()
+            .to_string()
     }
 }
 
@@ -57,33 +140,28 @@ fn p2fu(piece: char, promote: Promote) -> String {
     "歩香桂銀金角飛玉？".chars().nth(idx).unwrap().to_string()
 }
 
-fn extractdan(txt: &str) -> Result<String, String> {
-    let mut res = String::from("|");
+fn extractdan(txt: &str) -> Result<Vec<Koma>, String> {
+    let mut res = Vec::<Koma>::new();
     let masu = txt.chars();
     let mut promote = Promote::None;
-    let resente = Regex::new("[PLNSGBRK]").unwrap();
-    let regote = Regex::new("[plnsgbrk]").unwrap();
+    let rekoma = Regex::new("[PLNSGBRK]").unwrap();
     for ch in masu {
         match ch {
             '1'..='9' => {
-                res = res
-                    + &std::iter::repeat(" ・")
-                        .take(ch.to_digit(10).unwrap() as usize)
-                        .collect::<String>()
+                res.append(&mut vec![
+                    Koma::from('?', Promote::None);
+                    ch.to_digit(10).unwrap() as usize
+                ]);
+            }
+            ch if rekoma.is_match(&ch.to_ascii_uppercase().to_string()) => {
+                res.push(Koma::from(ch, promote));
+                promote = Promote::None;
             }
             '+' => promote = Promote::Promoted,
-            ch if resente.is_match(&ch.to_string()) => {
-                res = res + " " + &p2fu(ch.to_ascii_lowercase(), promote);
-                promote = Promote::None;
-            }
-            ch if regote.is_match(&ch.to_string()) => {
-                res = res + "v" + &p2fu(ch, promote);
-                promote = Promote::None;
-            }
             _ => return Err(format!("{} is not allowed to use!!", ch)),
         }
     }
-    Ok(res + "|")
+    Ok(res)
 }
 
 impl Sfen {
@@ -144,9 +222,21 @@ impl Sfen {
         let vdan: Vec<&str> = self.ban.split("/").collect();
         for (i, e) in vdan.iter().enumerate() {
             match extractdan(e) {
-                Ok(ret) => res = res + &ret + &dannum.chars().nth(i).unwrap().to_string() + "\n",
+                Ok(ret) => {
+                    res = format!(
+                        "{}|{}|\n",
+                        res,
+                        ret.iter()
+                            .map(|koma| koma.to_string())
+                            .collect::<Vec<String>>()
+                            .join("")
+                    );
+                }
                 Err(msg) => return format!("error in [{}]:{}", e, msg),
             }
+            // match dumpextractdan(e) {
+            //     Ok(ret) => res = res + &ret + &dannum.chars().nth(i).unwrap().to_string() + "\n",
+            // }
         }
         match self.extracttegoma() {
             Ok((sentegoma, gotegoma)) => {
