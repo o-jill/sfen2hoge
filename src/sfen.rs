@@ -27,6 +27,34 @@ pub enum KomaType {
     Gyoku,
 }
 
+impl KomaType {
+    pub fn to_string(&self, promote: Promotion) -> String {
+        let idx = [
+            KomaType::Fu,
+            KomaType::Kyosha,
+            KomaType::Keima,
+            KomaType::Gin,
+            KomaType::Kin,
+            KomaType::Kaku,
+            KomaType::Hisha,
+            KomaType::Gyoku,
+            KomaType::Aki,
+        ]
+        .iter()
+        .position(|&k| k == *self)
+        .unwrap();
+        if promote.is_promoted() {
+            "と杏圭全金馬龍玉"
+        } else {
+            "歩香桂銀金角飛玉"
+        }
+        .chars()
+        .nth(idx)
+        .unwrap()
+        .to_string()
+    }
+}
+
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub enum Promotion {
     None,
@@ -74,31 +102,9 @@ impl Koma {
         if self.teban == Teban::None || self.koma == KomaType::Aki {
             return String::from(" ・");
         }
-        let idx = [
-            KomaType::Fu,
-            KomaType::Kyosha,
-            KomaType::Keima,
-            KomaType::Gin,
-            KomaType::Kin,
-            KomaType::Kaku,
-            KomaType::Hisha,
-            KomaType::Gyoku,
-            KomaType::Aki,
-        ]
-        .iter()
-        .position(|&k| k == self.koma)
-        .unwrap();
 
         String::from(if self.teban == Teban::Sente { " " } else { "v" })
-            + &if self.promotion.is_promoted() {
-                "と杏圭全金馬龍玉"
-            } else {
-                "歩香桂銀金角飛玉"
-            }
-            .chars()
-            .nth(idx)
-            .unwrap()
-            .to_string()
+            + &self.koma.to_string(self.promotion)
     }
 }
 
