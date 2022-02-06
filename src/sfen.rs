@@ -53,6 +53,24 @@ impl KomaType {
         .unwrap()
         .to_string()
     }
+
+    pub fn from(ch: char) -> KomaType {
+        let idx = "PLNSGBRK"
+            .chars()
+            .position(|k| k == ch.to_ascii_uppercase())
+            .unwrap_or(8);
+        [
+            KomaType::Fu,
+            KomaType::Kyosha,
+            KomaType::Keima,
+            KomaType::Gin,
+            KomaType::Kin,
+            KomaType::Kaku,
+            KomaType::Hisha,
+            KomaType::Gyoku,
+            KomaType::Aki,
+        ][idx]
+    }
 }
 
 #[derive(PartialEq, Debug, Clone, Copy)]
@@ -76,19 +94,8 @@ pub struct Koma {
 
 impl Koma {
     pub fn from(ch: char, promote: Promotion) -> Koma {
-        let idx = "plnsgbrk".find(ch.to_ascii_lowercase()).unwrap_or(8);
         Koma {
-            koma: [
-                KomaType::Fu,
-                KomaType::Kyosha,
-                KomaType::Keima,
-                KomaType::Gin,
-                KomaType::Kin,
-                KomaType::Kaku,
-                KomaType::Hisha,
-                KomaType::Gyoku,
-                KomaType::Aki,
-            ][idx],
+            koma: KomaType::from(ch),
             promotion: promote,
             teban: if ch.is_uppercase() {
                 Teban::Sente
@@ -109,47 +116,31 @@ impl Koma {
 }
 
 pub struct Tegoma {
-    koma: char, // plnsgbrk
+    koma: KomaType,
     num: usize,
 }
 
 impl Tegoma {
     pub fn new(p: char, n: usize) -> Tegoma {
-        Tegoma { koma: p, num: n }
+        Tegoma {
+            koma: KomaType::from(p),
+            num: n,
+        }
     }
     pub fn to_kanji(&self) -> Result<String, String> {
-        match p2fu(self.koma, Promotion::None) {
-            Err(msg) => return Err(msg),
-            Ok(kanji) => {
-                let kanjinum = [
-                    "", "", /*"一"*/
-                    "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三",
-                    "十四", "十五", "十六", "十七", "十八",
-                ];
-                if self.num > 18 {
-                    return Err(kanji + &String::from("??"));
-                }
-                if self.num == 0 {
-                    return Ok(String::new());
-                }
-                Ok(kanji + &kanjinum[self.num])
-            }
+        let kanji = self.koma.to_string(Promotion::None);
+        let kanjinum = [
+            "", "", /*"一"*/
+            "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四",
+            "十五", "十六", "十七", "十八",
+        ];
+        if self.num > 18 {
+            return Err(kanji + &String::from("??"));
         }
-    }
-}
-
-fn p2fu(piece: char, promote: Promotion) -> Result<String, String> {
-    match "plnsgbrk".find(piece) {
-        Some(idx) => Ok(if promote.is_promoted() {
-            "と杏圭全金馬龍玉"
-        } else {
-            "歩香桂銀金角飛玉"
+        if self.num == 0 {
+            return Ok(String::new());
         }
-        .chars()
-        .nth(idx)
-        .unwrap()
-        .to_string()),
-        _ => Err(format!("{} is invalid koma expression.", piece)),
+        Ok(kanji + &kanjinum[self.num])
     }
 }
 
