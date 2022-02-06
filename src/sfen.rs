@@ -90,7 +90,7 @@ impl Koma {
         .unwrap();
 
         String::from(if self.teban == Teban::Sente { " " } else { "v" })
-            + &if self.promoted.is_promoted() {
+            + &if self.promotion.is_promoted() {
                 "と杏圭全金馬龍玉"
             } else {
                 "歩香桂銀金角飛玉"
