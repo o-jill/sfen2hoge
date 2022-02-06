@@ -229,12 +229,13 @@ impl Sfen {
             match extractdan(e) {
                 Ok(ret) => {
                     res = format!(
-                        "{}|{}|\n",
+                        "{}|{}|{}\n",
                         res,
                         ret.iter()
                             .map(|koma| koma.to_string())
                             .collect::<Vec<String>>()
-                            .join("")
+                            .join(""),
+                        dannum.chars().nth(i).unwrap()
                     );
                 }
                 Err(msg) => return format!("error in [{}]:{}", e, msg),
