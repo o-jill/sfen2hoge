@@ -1,9 +1,5 @@
 use regex::Regex;
 
-// struct Tegoma {
-//     koma: Vec<i8>,
-// }
-
 pub struct Sfen {
     ban: String,
     teban: String,
