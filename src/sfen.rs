@@ -28,26 +28,26 @@ pub enum KomaType {
 }
 
 #[derive(PartialEq, Debug, Clone, Copy)]
-pub enum Promote {
+pub enum Promotion {
     None,
     Promoted,
 }
 
-impl Promote {
+impl Promotion {
     pub fn is_promoted(&self) -> bool {
-        *self == Promote::Promoted
+        *self == Promotion::Promoted
     }
 }
 
 #[derive(Clone)]
 pub struct Koma {
     koma: KomaType,
-    promoted: Promote,
+    promotion: Promotion,
     teban: Teban,
 }
 
 impl Koma {
-    pub fn from(ch: char, promote: Promote) -> Koma {
+    pub fn from(ch: char, promote: Promotion) -> Koma {
         let idx = "plnsgbrk".find(ch.to_ascii_lowercase()).unwrap_or(8);
         Koma {
             koma: [
@@ -61,7 +61,7 @@ impl Koma {
                 KomaType::Gyoku,
                 KomaType::Aki,
             ][idx],
-            promoted: promote,
+            promotion: promote,
             teban: if ch.is_uppercase() {
                 Teban::Sente
             } else {
@@ -112,7 +112,7 @@ impl Tegoma {
         Tegoma { koma: p, num: n }
     }
     pub fn to_kanji(&self) -> Result<String, String> {
-        match p2fu(self.koma, Promote::None) {
+        match p2fu(self.koma, Promotion::None) {
             Err(msg) => return Err(msg),
             Ok(kanji) => {
                 let kanjinum = [
@@ -132,7 +132,7 @@ impl Tegoma {
     }
 }
 
-fn p2fu(piece: char, promote: Promote) -> Result<String, String> {
+fn p2fu(piece: char, promote: Promotion) -> Result<String, String> {
     match "plnsgbrk".find(piece) {
         Some(idx) => Ok(if promote.is_promoted() {
             "と杏圭全金馬龍玉"
@@ -150,21 +150,21 @@ fn p2fu(piece: char, promote: Promote) -> Result<String, String> {
 fn extractdan(txt: &str) -> Result<Vec<Koma>, String> {
     let mut res = Vec::<Koma>::new();
     let masu = txt.chars();
-    let mut promote = Promote::None;
+    let mut promote = Promotion::None;
     let rekoma = Regex::new("[PLNSGBRK]").unwrap();
     for ch in masu {
         match ch {
             '1'..='9' => {
                 res.append(&mut vec![
-                    Koma::from('?', Promote::None);
+                    Koma::from('?', Promotion::None);
                     ch.to_digit(10).unwrap() as usize
                 ]);
             }
             ch if rekoma.is_match(&ch.to_ascii_uppercase().to_string()) => {
                 res.push(Koma::from(ch, promote));
-                promote = Promote::None;
+                promote = Promotion::None;
             }
-            '+' => promote = Promote::Promoted,
+            '+' => promote = Promotion::Promoted,
             _ => return Err(format!("{} is not allowed to use!!", ch)),
         }
     }
