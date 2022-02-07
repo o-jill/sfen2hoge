@@ -8,6 +8,20 @@ enum Mode {
     PNG,
 }
 
+fn help(msg: String) {
+    if !msg.is_empty() {
+        println!("{}", msg);
+    }
+    println!("sfen2reader sfen [options]");
+    println!("sfen:");
+    println!("ex.\t\"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\"");
+    println!("options:");
+    println!("\t--txt  : text style.");
+    println!("\t--svg  : svg style.");
+    println!("\t--png  : png style.");
+    println!("\t--help : show this help.");
+}
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     // let txt = "9/9/9/9/9/9/9/9/9 w - 0";
@@ -24,14 +38,7 @@ fn main() {
         } else if e == "--txt" {
             md = Mode::Text;
         } else if e == "--help" {
-            println!("sfen2reader sfen [options]");
-            println!("sfen:");
-            println!("ex.\t\"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\"");
-            println!("options:");
-            println!("\t--txt  : text style.");
-            println!("\t--svg  : svg style.");
-            println!("\t--png  : png style.");
-            println!("\t--help : show this help.");
+            help(String::new());
             return;
         } else {
             txt = e;
