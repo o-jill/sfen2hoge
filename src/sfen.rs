@@ -171,6 +171,14 @@ fn extractdan(txt: &str) -> Result<Vec<Koma>, String> {
 impl Sfen {
     pub fn new(text: &str) -> Sfen {
         let e: Vec<&str> = text.split(" ").collect();
+        if e.len() < 4 {
+            return Sfen {
+                ban: String::new(),
+                teban: String::new(),
+                tegoma: String::new(),
+                nteme: -2,
+            };
+        }
         Sfen {
             ban: e[0].to_string(),
             teban: e[1].to_string(),
