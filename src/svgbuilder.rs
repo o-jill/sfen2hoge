@@ -4,20 +4,24 @@ pub struct Attrib {
 }
 
 impl Attrib {
-    pub fn new(nm: &str) -> Attrib {
+    pub fn new(nm: &str, val: String) -> Attrib {
         Attrib {
             name: String::from(nm),
-            val: String::new(),
+            val: val,
         }
     }
     pub fn to_string(&self) -> String {
-        format!("{}=\"{}\" ", self.name, self.val)
+        if self.val.is_empty() {
+            self.name.clone()
+        } else {
+            format!(" {}=\"{}\"", self.name, self.val)
+        }
     }
 }
 
 pub struct Tag {
     name: String,
-    value: String,
+    pub value: String,
     attribs: Vec<Attrib>,
     children: Vec<Tag>,
 }
@@ -41,16 +45,20 @@ impl Tag {
     pub fn to_svg(&self) -> String {
         if self.children.len() > 0 {
             format!(
-                "<{} value=\"{}\" {}>{}</{}>",
+                "<{}{}{}>\n{}\n</{}>",
                 self.name,
-                self.value,
+                if self.value.is_empty() {
+                    String::new()
+                } else {
+                    format!(" value=\"{}\"", self.value)
+                },
                 self.attrib2string(),
                 self.child2string(),
                 self.name
             )
         } else {
             format!(
-                "<{} {}>{}</{}>",
+                "<{}{}>{}</{}>",
                 self.name,
                 self.attrib2string(),
                 self.value,
@@ -63,7 +71,7 @@ impl Tag {
             .iter()
             .map(|a| a.to_string())
             .collect::<Vec<String>>()
-            .join(" ")
+            .join("")
     }
     pub fn child2string(&self) -> String {
         self.children
@@ -71,5 +79,27 @@ impl Tag {
             .map(|c| c.to_svg())
             .collect::<Vec<String>>()
             .join("")
+    }
+}
+
+pub struct SVG {
+    pub tag: Tag,
+}
+
+impl SVG {
+    pub fn new() -> SVG {
+        let mut svg = SVG {
+            tag: Tag::new("svg"),
+        };
+        svg.tag
+            .addattrib(Attrib::new("version", String::from("1.1")));
+        svg.tag.addattrib(Attrib::new(
+            "xmlns",
+            String::from("http://www.w3.org/2000/svg"),
+        ));
+        svg
+    }
+    pub fn to_svg(&self) -> String {
+        format!("<?xml version='1.0'?>\n{}", self.tag.to_svg())
     }
 }
