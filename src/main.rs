@@ -1,6 +1,7 @@
 use std::io;
 
 mod sfen;
+mod svgbuilder;
 
 enum Mode {
     Text,
