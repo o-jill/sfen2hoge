@@ -30,7 +30,7 @@ fn main() {
     // let txt = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
 
     let mut md = Mode::Text;
-    for e in args.iter() {
+    for e in args[1..].iter() {
         if e == "--svg" {
             md = Mode::SVG;
         } else if e == "--png" {
