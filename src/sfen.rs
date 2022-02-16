@@ -305,6 +305,7 @@ impl Sfen {
         let mut svg = SVG::new();
         let mut gban = Tag::new("g");
         gban.addattrib(Attrib::new("id", String::from("board")));
+        gban.addattrib(Attrib::new("transform", String::from("translate(35,65)")));
         match self.extractban() {
             Ok(ban) => {
                 for (i, dan) in ban.iter().enumerate() {
