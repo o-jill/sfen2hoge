@@ -322,7 +322,7 @@ impl Sfen {
                         format!("translate(0,{})", i * 20 + 10),
                     ));
                     for (j, k) in dan.iter().enumerate() {
-                        match komatag(k, (j * 20) as i32, 0) {
+                        match komatag(k, j as i32, 0) {
                             Some(tag) => gdan.addchild(tag),
                             None => {}
                         }
@@ -353,17 +353,31 @@ fn komatag(k: &Koma, x: i32, y: i32) -> Option<Tag> {
     if k.is_blank() {
         return None;
     }
+
+    let mut kt = Tag::new("g");
+    kt.addattrib(Attrib::new(
+        "transform",
+        format!("translate({},{})", x * 20, y * 20),
+    ));
+
     if k.is_sente() {
-        let mut tag = Tag::new("Text");
-        tag.addattrib(Attrib::new("x", format!("{}", x)));
-        tag.addattrib(Attrib::new("y", format!("{}", y)));
+        let mut tag = Tag::new("text");
+        tag.addattrib(Attrib::new("x", format!("{}", 10)));
+        tag.addattrib(Attrib::new("y", format!("{}", 17)));
         tag.value = k.to_kstring().unwrap();
-        return Some(tag);
+        kt.addchild(tag);
+
+        return Some(kt);
     }
+
     // gote
-    let mut tag = Tag::new("Text");
-    tag.addattrib(Attrib::new("x", format!("{}", x)));
-    tag.addattrib(Attrib::new("y", format!("{}", y)));
+    let mut gote = Tag::new("g");
+    gote.addattrib(Attrib::from("transform", "translate(10,10) rotate(180)"));
+    let mut tag = Tag::new("text");
+    tag.addattrib(Attrib::from("x", "0"));
+    tag.addattrib(Attrib::from("y", "6"));
     tag.value = k.to_kstring().unwrap();
-    Some(tag)
+    gote.addchild(tag);
+    kt.addchild(gote);
+    Some(kt)
 }
