@@ -83,6 +83,9 @@ impl Tag {
             .collect::<Vec<String>>()
             .join("")
     }
+    pub fn has_child(&self) -> bool {
+        !self.children.is_empty()
+    }
 }
 
 pub struct SVG {

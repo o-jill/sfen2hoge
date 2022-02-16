@@ -301,8 +301,7 @@ impl Sfen {
         }
     }
 
-    pub fn to_svg(&self) -> Result<SVG, String> {
-        let mut svg = SVG::new();
+    fn buildboard(&self) -> Result<Tag, String> {
         let mut gban = Tag::new("g");
         gban.addattrib(Attrib::from("id", "board"));
         gban.addattrib(Attrib::from("transform", "translate(35,65)"));
@@ -325,12 +324,24 @@ impl Sfen {
                         t1.value = k.to_kstring().unwrap();
                         gdan.addchild(t1);
                     }
-                    gban.addchild(gdan);
+                    if gdan.has_child() {
+                        gban.addchild(gdan)
+                    }
                 }
-                svg.tag.addchild(gban);
+                Ok(gban)
             }
             Err(msg) => return Err(msg),
         }
-        Ok(svg)
+    }
+
+    pub fn to_svg(&self) -> Result<SVG, String> {
+        let mut svg = SVG::new();
+        match self.buildboard() {
+            Ok(tag) => {
+                svg.tag.addchild(tag);
+                Ok(svg)
+            }
+            Err(msg) => Err(msg),
+        }
     }
 }
