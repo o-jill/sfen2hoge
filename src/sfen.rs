@@ -304,7 +304,7 @@ impl Sfen {
     pub fn to_svg(&self) -> Result<SVG, String> {
         let mut svg = SVG::new();
         let mut gban = Tag::new("g");
-        gban.addattrib(Attrib::new("id", String::from("ban")));
+        gban.addattrib(Attrib::new("id", String::from("board")));
         match self.extractban() {
             Ok(ban) => {
                 for (i, dan) in ban.iter().enumerate() {
