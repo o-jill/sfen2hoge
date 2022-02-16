@@ -54,6 +54,19 @@ fn main() {
             let mut svg = svgbuilder::SVG::new();
             let mut e1 = svgbuilder::Tag::new("g");
             let mut t1 = svgbuilder::Tag::new("text");
+            match sfen.extractban() {
+                Ok(ban) => {
+                    for dan in ban {
+                        for k in dan {
+                            if k.is_blank() {
+                                continue;
+                            }
+                            println!("{}", k.to_string())
+                        }
+                    }
+                }
+                Err(msg) => println!("Error:{}", msg),
+            }
             t1.value = String::from("龍");
             t1.addattrib(svgbuilder::Attrib::new("x", String::from("20")));
             t1.addattrib(svgbuilder::Attrib::new("y", String::from("20")));
