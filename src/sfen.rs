@@ -114,9 +114,16 @@ impl Koma {
             + &self.koma.to_string(self.promotion)
     }
 
-pub fn is_blank(&self) -> bool {
-    self.koma == KomaType::Aki
-}
+    pub fn to_kstring(&self) -> Option<String> {
+        if self.teban == Teban::None || self.koma == KomaType::Aki {
+            return None;
+        }
+        Some(self.koma.to_string(self.promotion))
+    }
+
+    pub fn is_blank(&self) -> bool {
+        self.koma == KomaType::Aki
+    }
 }
 
 pub struct Tegoma {
