@@ -50,13 +50,13 @@ fn main() {
 
     match md {
         Mode::SVG => {
-            println!("svg will be here.");
             //let mut svg = svgbuilder::Tag::new("svg");
             let mut svg = svgbuilder::SVG::new();
             let mut e1 = svgbuilder::Tag::new("g");
             let mut t1 = svgbuilder::Tag::new("text");
             t1.value = String::from("龍");
-            t1.addattrib(svgbuilder::Attrib::new("x", String::from("0")));
+            t1.addattrib(svgbuilder::Attrib::new("x", String::from("20")));
+            t1.addattrib(svgbuilder::Attrib::new("y", String::from("20")));
             e1.addchild(t1);
             svg.tag.addchild(e1);
             println!("{}", svg.to_svg());

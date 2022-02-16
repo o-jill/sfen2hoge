@@ -91,12 +91,16 @@ impl SVG {
         let mut svg = SVG {
             tag: Tag::new("svg"),
         };
-        svg.tag
-            .addattrib(Attrib::new("version", String::from("1.1")));
-        svg.tag.addattrib(Attrib::new(
-            "xmlns",
-            String::from("http://www.w3.org/2000/svg"),
-        ));
+        let atb = [
+            ("width", "260"),
+            ("height", "275"),
+            ("viewBox", "0 0 260 275"),
+            ("version", "1.1"),
+            ("xmlns", "http://www.w3.org/2000/svg"),
+        ];
+        for (nm, val) in atb {
+            svg.tag.addattrib(Attrib::new(nm, val.to_string()));
+        }
         svg
     }
     pub fn to_svg(&self) -> String {
