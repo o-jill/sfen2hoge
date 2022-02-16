@@ -113,6 +113,10 @@ impl Koma {
         String::from(if self.teban == Teban::Sente { " " } else { "v" })
             + &self.koma.to_string(self.promotion)
     }
+
+pub fn is_blank(&self) -> bool {
+    self.koma == KomaType::Aki
+}
 }
 
 pub struct Tegoma {
