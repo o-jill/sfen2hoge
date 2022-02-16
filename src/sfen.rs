@@ -1,6 +1,6 @@
 use super::*;
 use regex::Regex;
-// mod svgbuilder;
+use svgbuilder::*;
 
 pub struct Sfen {
     ban: String,
@@ -301,16 +301,16 @@ impl Sfen {
         }
     }
 
-    pub fn to_svg(&self) -> Result<svgbuilder::SVG, String> {
-        let mut svg = svgbuilder::SVG::new();
-        let mut gban = svgbuilder::Tag::new("g");
-        gban.addattrib(svgbuilder::Attrib::new("id", String::from("ban")));
+    pub fn to_svg(&self) -> Result<SVG, String> {
+        let mut svg = SVG::new();
+        let mut gban = Tag::new("g");
+        gban.addattrib(Attrib::new("id", String::from("ban")));
         match self.extractban() {
             Ok(ban) => {
                 for (i, dan) in ban.iter().enumerate() {
-                    let mut gdan = svgbuilder::Tag::new("g");
-                    gdan.addattrib(svgbuilder::Attrib::new("id", format!("dan{}", i + 1)));
-                    gdan.addattrib(svgbuilder::Attrib::new(
+                    let mut gdan = Tag::new("g");
+                    gdan.addattrib(Attrib::new("id", format!("dan{}", i + 1)));
+                    gdan.addattrib(Attrib::new(
                         "transform",
                         format!("translate(0,{})", i * 20 + 10),
                     ));
@@ -318,9 +318,9 @@ impl Sfen {
                         if k.is_blank() {
                             continue;
                         }
-                        let mut t1 = svgbuilder::Tag::new("text");
-                        t1.addattrib(svgbuilder::Attrib::new("x", format!("{}", j * 20)));
-                        t1.addattrib(svgbuilder::Attrib::new("y", String::from("0")));
+                        let mut t1 = Tag::new("text");
+                        t1.addattrib(Attrib::new("x", format!("{}", j * 20)));
+                        t1.addattrib(Attrib::new("y", String::from("0")));
                         t1.value = k.to_kstring().unwrap();
                         gdan.addchild(t1);
                     }
