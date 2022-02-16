@@ -10,6 +10,9 @@ impl Attrib {
             val: val,
         }
     }
+    pub fn from(nm: &str, val: &str) -> Attrib {
+        Attrib::new(nm, val.to_string())
+    }
     pub fn to_string(&self) -> String {
         if self.val.is_empty() {
             self.name.clone()
@@ -99,7 +102,7 @@ impl SVG {
             ("xmlns", "http://www.w3.org/2000/svg"),
         ];
         for (nm, val) in atb {
-            svg.tag.addattrib(Attrib::new(nm, val.to_string()));
+            svg.tag.addattrib(Attrib::from(nm, val));
         }
         svg
     }

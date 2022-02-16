@@ -304,8 +304,8 @@ impl Sfen {
     pub fn to_svg(&self) -> Result<SVG, String> {
         let mut svg = SVG::new();
         let mut gban = Tag::new("g");
-        gban.addattrib(Attrib::new("id", String::from("board")));
-        gban.addattrib(Attrib::new("transform", String::from("translate(35,65)")));
+        gban.addattrib(Attrib::from("id", "board"));
+        gban.addattrib(Attrib::from("transform", "translate(35,65)"));
         match self.extractban() {
             Ok(ban) => {
                 for (i, dan) in ban.iter().enumerate() {
@@ -321,7 +321,7 @@ impl Sfen {
                         }
                         let mut t1 = Tag::new("text");
                         t1.addattrib(Attrib::new("x", format!("{}", j * 20)));
-                        t1.addattrib(Attrib::new("y", String::from("0")));
+                        t1.addattrib(Attrib::from("y", "0"));
                         t1.value = k.to_kstring().unwrap();
                         gdan.addchild(t1);
                     }
