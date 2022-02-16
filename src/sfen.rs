@@ -126,6 +126,13 @@ impl Koma {
     pub fn is_blank(&self) -> bool {
         self.koma == KomaType::Aki
     }
+
+    pub fn is_sente(&self) -> bool {
+        self.teban == Teban::Sente
+    }
+    pub fn is_gote(&self) -> bool {
+        self.teban == Teban::Gote
+    }
 }
 
 pub struct Tegoma {
@@ -315,14 +322,10 @@ impl Sfen {
                         format!("translate(0,{})", i * 20 + 10),
                     ));
                     for (j, k) in dan.iter().enumerate() {
-                        if k.is_blank() {
-                            continue;
+                        match komatag(k, (j * 20) as i32, 0) {
+                            Some(tag) => gdan.addchild(tag),
+                            None => {}
                         }
-                        let mut t1 = Tag::new("text");
-                        t1.addattrib(Attrib::new("x", format!("{}", j * 20)));
-                        t1.addattrib(Attrib::from("y", "0"));
-                        t1.value = k.to_kstring().unwrap();
-                        gdan.addchild(t1);
                     }
                     if gdan.has_child() {
                         gban.addchild(gdan)
@@ -344,4 +347,23 @@ impl Sfen {
             Err(msg) => Err(msg),
         }
     }
+}
+
+fn komatag(k: &Koma, x: i32, y: i32) -> Option<Tag> {
+    if k.is_blank() {
+        return None;
+    }
+    if k.is_sente() {
+        let mut tag = Tag::new("Text");
+        tag.addattrib(Attrib::new("x", format!("{}", x)));
+        tag.addattrib(Attrib::new("y", format!("{}", y)));
+        tag.value = k.to_kstring().unwrap();
+        return Some(tag);
+    }
+    // gote
+    let mut tag = Tag::new("Text");
+    tag.addattrib(Attrib::new("x", format!("{}", x)));
+    tag.addattrib(Attrib::new("y", format!("{}", y)));
+    tag.value = k.to_kstring().unwrap();
+    Some(tag)
 }
