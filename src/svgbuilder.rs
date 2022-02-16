@@ -103,7 +103,7 @@ impl SVG {
         }
         svg
     }
-    pub fn to_svg(&self) -> String {
+    pub fn to_string(&self) -> String {
         format!("<?xml version='1.0'?>\n{}", self.tag.to_svg())
     }
 }
