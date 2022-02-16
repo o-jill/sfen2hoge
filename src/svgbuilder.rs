@@ -48,7 +48,7 @@ impl Tag {
     pub fn to_svg(&self) -> String {
         if self.children.len() > 0 {
             format!(
-                "<{}{}{}>\n{}\n</{}>\n",
+                "<{}{}{}>\n{}</{}>\n",
                 self.name,
                 if self.value.is_empty() {
                     String::new()
