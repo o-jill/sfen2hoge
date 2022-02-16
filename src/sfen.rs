@@ -205,7 +205,17 @@ impl Sfen {
         }
         Err(format!("{} is invalid teban expression.", self.teban))
     }
-
+    pub fn extractban(&self) -> Result<Vec<Vec<Koma>>, String> {
+        let mut masus: Vec<Vec<Koma>> = Vec::new();
+        let vdan: Vec<&str> = self.ban.split("/").collect();
+        for e in vdan.iter() {
+            match extractdan(e) {
+                Ok(ret) => masus.push(ret),
+                Err(msg) => return Err(msg),
+            }
+        }
+        return Ok(masus);
+    }
     fn extracttegoma(&self) -> Result<(Vec<Tegoma>, Vec<Tegoma>), String> {
         let resente = Regex::new("[PLNSGBRK]").unwrap();
         let regote = Regex::new("[plnsgbrk]").unwrap();
