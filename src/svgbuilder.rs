@@ -45,23 +45,24 @@ impl Tag {
     pub fn addattrib(&mut self, atr: Attrib) {
         self.attribs.push(atr);
     }
-    pub fn to_svg(&self) -> String {
+    pub fn to_svg(&self, indent:String) -> String {
         if self.children.len() > 0 {
             format!(
-                "<{}{}{}>\n{}</{}>\n",
-                self.name,
-                if self.value.is_empty() {
+                "{ind}<{nm}{val}{atr}>\n{chld}{ind}</{nm}>\n",
+                nm = self.name,
+                val = if self.value.is_empty() {
                     String::new()
                 } else {
                     format!(" value=\"{}\"", self.value)
                 },
-                self.attrib2string(),
-                self.child2string(),
-                self.name
+                atr = self.attrib2string(),
+                chld = self.child2string(indent.clone()),
+                ind = indent
             )
         } else {
             format!(
-                "<{}{}>{}</{}>\n",
+                "{}<{}{}>{}</{}>\n",
+                indent,
                 self.name,
                 self.attrib2string(),
                 self.value,
@@ -76,10 +77,10 @@ impl Tag {
             .collect::<Vec<String>>()
             .join("")
     }
-    pub fn child2string(&self) -> String {
+    pub fn child2string(&self, indent:String) -> String {
         self.children
             .iter()
-            .map(|c| c.to_svg())
+            .map(|c| c.to_svg(format!("{} ", indent)))
             .collect::<Vec<String>>()
             .join("")
     }
@@ -110,6 +111,6 @@ impl SVG {
         svg
     }
     pub fn to_string(&self) -> String {
-        format!("<?xml version='1.0'?>\n{}", self.tag.to_svg())
+        format!("<?xml version='1.0'?>\n{}", self.tag.to_svg(String::new()))
     }
 }
