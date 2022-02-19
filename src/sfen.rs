@@ -309,17 +309,18 @@ impl Sfen {
     }
 
     fn buildboard(&self) -> Result<Tag, String> {
-        let mut gban = Tag::new("g");
-        gban.addattrib(Attrib::from("id", "board"));
-        gban.addattrib(Attrib::from("transform", "translate(35,65)"));
         match self.extractban() {
             Ok(ban) => {
+                let mut gban = Tag::new("g");
+                gban.addattrib(Attrib::from("id", "board"));
+                gban.addattrib(Attrib::from("transform", "translate(35,65)"));
+                gban.addchild(banborder());
                 for (i, dan) in ban.iter().enumerate() {
                     let mut gdan = Tag::new("g");
                     gdan.addattrib(Attrib::new("id", format!("dan{}", i + 1)));
                     gdan.addattrib(Attrib::new(
                         "transform",
-                        format!("translate(0,{})", i * 20 + 0),
+                        format!("translate(0,{})", i * 20),
                     ));
                     for (j, k) in dan.iter().enumerate() {
                         match komatag(k, j as i32, 0) {
@@ -331,7 +332,6 @@ impl Sfen {
                         gban.addchild(gdan)
                     }
                 }
-                gban.addchild(banborder());
                 Ok(gban)
             }
             Err(msg) => return Err(msg),
@@ -385,6 +385,7 @@ fn komatag(k: &Koma, x: i32, y: i32) -> Option<Tag> {
     kt.addchild(gote);
     Some(kt)
 }
+
 fn banborder() -> Tag {
     let mut ret = Tag::new("g");
     ret.addattrib(Attrib::from("id", "ban"));
