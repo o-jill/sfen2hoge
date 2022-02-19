@@ -312,16 +312,13 @@ impl Sfen {
         match self.extractban() {
             Ok(ban) => {
                 let mut gban = Tag::new("g");
-                gban.addattrib(Attrib::from("id", "board"));
-                gban.addattrib(Attrib::from("transform", "translate(35,65)"));
+                gban.newattrib("id", "board");
+                gban.newattrib("transform", "translate(35,65)");
                 gban.addchild(banborder());
                 for (i, dan) in ban.iter().enumerate() {
                     let mut gdan = Tag::new("g");
                     gdan.addattrib(Attrib::new("id", format!("dan{}", i + 1)));
-                    gdan.addattrib(Attrib::new(
-                        "transform",
-                        format!("translate(0,{})", i * 20),
-                    ));
+                    gdan.addattrib(Attrib::new("transform", format!("translate(0,{})", i * 20)));
                     for (j, k) in dan.iter().enumerate() {
                         match komatag(k, j as i32, 0) {
                             Some(tag) => gdan.addchild(tag),
@@ -334,7 +331,7 @@ impl Sfen {
                 }
                 Ok(gban)
             }
-            Err(msg) => return Err(msg),
+            Err(msg) => Err(msg),
         }
     }
 
@@ -364,8 +361,8 @@ fn komatag(k: &Koma, x: i32, y: i32) -> Option<Tag> {
     ));
 
     let mut tag = Tag::new("text");
-    tag.addattrib(Attrib::from("font-size", "18px"));
-    tag.addattrib(Attrib::from("text-anchor", "middle"));
+    tag.newattrib("font-size", "18px");
+    tag.newattrib("text-anchor", "middle");
     if k.is_sente() {
         tag.addattrib(Attrib::new("x", format!("{}", 10)));
         tag.addattrib(Attrib::new("y", format!("{}", 17)));
@@ -377,9 +374,9 @@ fn komatag(k: &Koma, x: i32, y: i32) -> Option<Tag> {
 
     // gote
     let mut gote = Tag::new("g");
-    gote.addattrib(Attrib::from("transform", "translate(10,10) rotate(180)"));
-    tag.addattrib(Attrib::from("x", "0"));
-    tag.addattrib(Attrib::from("y", "6"));
+    gote.newattrib("transform", "translate(10,10) rotate(180)");
+    tag.newattrib("x", "0");
+    tag.newattrib("y", "6");
     tag.value = k.to_kstring().unwrap();
     gote.addchild(tag);
     kt.addchild(gote);
@@ -388,37 +385,37 @@ fn komatag(k: &Koma, x: i32, y: i32) -> Option<Tag> {
 
 fn banborder() -> Tag {
     let mut ret = Tag::new("g");
-    ret.addattrib(Attrib::from("id", "ban"));
+    ret.newattrib("id", "ban");
     let mut rect = Tag::new("rect");
 
     // <rect x='0' y='0' width='180' height='180' fill='none' stroke='black' stroke-width='2'/>
-    let tbl = [
-        ["x", "0"],
-        ["y", "0"],
-        ["width", "180"],
-        ["height", "180"],
-        ["fill", "none"],
-        ["stroke", "black"],
-        ["stroke-width", "2"],
+    let atr = [
+        ("x", "0"),
+        ("y", "0"),
+        ("width", "180"),
+        ("height", "180"),
+        ("fill", "none"),
+        ("stroke", "black"),
+        ("stroke-width", "2"),
     ];
-    for atr in tbl {
-        rect.addattrib(Attrib::from(atr[0], atr[1]));
+    for (nm, val) in atr {
+        rect.newattrib(nm, val);
     }
     ret.addchild(rect);
 
     // horizontal lines
     for i in 0..4 {
         let mut rect = Tag::new("rect");
-        let tbl = [
-            ["x", "0"],
-            ["width", "180"],
-            ["height", "20"],
-            ["fill", "none"],
-            ["stroke", "black"],
-            ["stroke-width", "1"],
+        let atr = [
+            ("x", "0"),
+            ("width", "180"),
+            ("height", "20"),
+            ("fill", "none"),
+            ("stroke", "black"),
+            ("stroke-width", "1"),
         ];
-        for atr in tbl {
-            rect.addattrib(Attrib::from(atr[0], atr[1]));
+        for (nm, val) in atr {
+            rect.newattrib(nm, val);
         }
         rect.addattrib(Attrib::new("y", format!("{}", i * 40 + 20)));
         ret.addchild(rect);
@@ -427,32 +424,28 @@ fn banborder() -> Tag {
     // vertical lines
     for i in 0..4 {
         let mut rect = Tag::new("rect");
-        let tbl = [
-            ["y", "0"],
-            ["width", "20"],
-            ["height", "180"],
-            ["fill", "none"],
-            ["stroke", "black"],
-            ["stroke-width", "1"],
+        let atr = [
+            ("y", "0"),
+            ("width", "20"),
+            ("height", "180"),
+            ("fill", "none"),
+            ("stroke", "black"),
+            ("stroke-width", "1"),
         ];
-        for atr in tbl {
-            rect.addattrib(Attrib::from(atr[0], atr[1]));
+        for (nm, val) in atr {
+            rect.newattrib(nm, val);
         }
         rect.addattrib(Attrib::new("x", format!("{}", i * 40 + 20)));
         ret.addchild(rect);
     }
     // suji numbers
     let mut suji = Tag::new("g");
-    suji.addattrib(Attrib::from("transform", "translate(0,-5)"));
+    suji.newattrib("transform", "translate(0,-5)");
     for (i, ch) in "１２３４５６７８９".chars().enumerate() {
-        let atrs = [
-            Attrib::from("y", "0"),
-            Attrib::from("font-size", "10px"),
-            Attrib::from("text-anchor", "middle"),
-        ];
+        let atrs = [("y", "0"), ("font-size", "10px"), ("text-anchor", "middle")];
         let mut txt = Tag::new("text");
-        for atr in atrs {
-            txt.addattrib(atr);
+        for (nm, val) in atrs {
+            txt.newattrib(nm, val);
         }
         txt.addattrib(Attrib::new("x", format!("{}", i * 20 + 10)));
         txt.value = ch.to_string();
@@ -462,16 +455,12 @@ fn banborder() -> Tag {
 
     // dan numbers
     let mut dan = Tag::new("g");
-    dan.addattrib(Attrib::from("transform", "translate(183,0)"));
+    dan.newattrib("transform", "translate(183,0)");
     for (i, ch) in "一二三四五六七八九".chars().enumerate() {
-        let atrs = [
-            Attrib::from("x", "0"),
-            Attrib::from("font-size", "10px"),
-            Attrib::from("text-anchor", "left"),
-        ];
+        let atrs = [("x", "0"), ("font-size", "10px"), ("text-anchor", "left")];
         let mut txt = Tag::new("text");
-        for atr in atrs {
-            txt.addattrib(atr);
+        for (nm, val) in atrs {
+            txt.newattrib(nm, val);
         }
         txt.addattrib(Attrib::new("y", format!("{}", i * 20 + 13)));
         txt.value = ch.to_string();

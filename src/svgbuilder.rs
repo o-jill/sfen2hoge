@@ -45,7 +45,12 @@ impl Tag {
     pub fn addattrib(&mut self, atr: Attrib) {
         self.attribs.push(atr);
     }
-    pub fn to_svg(&self, indent:String) -> String {
+
+    pub fn newattrib(&mut self, nm: &str, val: &str) {
+        self.addattrib(Attrib::from(nm, val));
+    }
+
+    pub fn to_svg(&self, indent: String) -> String {
         if self.children.len() > 0 {
             format!(
                 "{ind}<{nm}{val}{atr}>\n{chld}{ind}</{nm}>\n",
@@ -77,7 +82,7 @@ impl Tag {
             .collect::<Vec<String>>()
             .join("")
     }
-    pub fn child2string(&self, indent:String) -> String {
+    pub fn child2string(&self, indent: String) -> String {
         self.children
             .iter()
             .map(|c| c.to_svg(format!("{} ", indent)))
@@ -106,7 +111,7 @@ impl SVG {
             ("xmlns", "http://www.w3.org/2000/svg"),
         ];
         for (nm, val) in atb {
-            svg.tag.addattrib(Attrib::from(nm, val));
+            svg.tag.newattrib(nm, val);
         }
         svg
     }
