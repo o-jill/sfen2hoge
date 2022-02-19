@@ -339,14 +339,16 @@ impl Sfen {
     }
 
     pub fn to_svg(&self) -> Result<SVG, String> {
-        let mut svg = SVG::new();
+        let mut top = Tag::new("g");
         match self.buildboard() {
             Ok(tag) => {
-                svg.tag.addchild(tag);
-                Ok(svg)
+                top.addchild(tag);
             }
-            Err(msg) => Err(msg),
+            Err(msg) => return Err(msg),
         }
+        let mut svg = SVG::new();
+        svg.tag.addchild(top);
+        Ok(svg)
     }
 }
 
