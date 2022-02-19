@@ -361,8 +361,10 @@ fn komatag(k: &Koma, x: i32, y: i32) -> Option<Tag> {
         format!("translate({},{})", x * 20, y * 20),
     ));
 
+    let mut tag = Tag::new("text");
+    tag.addattrib(Attrib::from("font-size", "18px"));
+    tag.addattrib(Attrib::from("text-anchor", "middle"));
     if k.is_sente() {
-        let mut tag = Tag::new("text");
         tag.addattrib(Attrib::new("x", format!("{}", 10)));
         tag.addattrib(Attrib::new("y", format!("{}", 17)));
         tag.value = k.to_kstring().unwrap();
@@ -374,7 +376,6 @@ fn komatag(k: &Koma, x: i32, y: i32) -> Option<Tag> {
     // gote
     let mut gote = Tag::new("g");
     gote.addattrib(Attrib::from("transform", "translate(10,10) rotate(180)"));
-    let mut tag = Tag::new("text");
     tag.addattrib(Attrib::from("x", "0"));
     tag.addattrib(Attrib::from("y", "6"));
     tag.value = k.to_kstring().unwrap();
@@ -425,8 +426,8 @@ fn banborder() -> Tag {
         let mut rect = Tag::new("rect");
         let tbl = [
             ["y", "0"],
-            ["width", "180"],
-            ["height", "20"],
+            ["width", "20"],
+            ["height", "180"],
             ["fill", "none"],
             ["stroke", "black"],
             ["stroke-width", "1"],
