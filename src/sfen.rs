@@ -319,7 +319,7 @@ impl Sfen {
                     gdan.addattrib(Attrib::new("id", format!("dan{}", i + 1)));
                     gdan.addattrib(Attrib::new(
                         "transform",
-                        format!("translate(0,{})", i * 20 + 10),
+                        format!("translate(0,{})", i * 20 + 0),
                     ));
                     for (j, k) in dan.iter().enumerate() {
                         match komatag(k, j as i32, 0) {
