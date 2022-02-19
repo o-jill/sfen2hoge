@@ -388,28 +388,33 @@ fn banborder() -> Tag {
     let mut rect = Tag::new("rect");
 
     // <rect x='0' y='0' width='180' height='180' fill='none' stroke='black' stroke-width='2'/>
-    rect.addattrib(Attrib::from("x", "0"));
-    rect.addattrib(Attrib::from("y", "0"));
-    rect.addattrib(Attrib::from("width", "180"));
-    rect.addattrib(Attrib::from("height", "180"));
-    rect.addattrib(Attrib::from("fill", "none"));
-    rect.addattrib(Attrib::from("stroke", "black"));
-    rect.addattrib(Attrib::from("stroke-width", "2"));
+    let tbl = [
+        ["x", "0"],
+        ["y", "0"],
+        ["width", "180"],
+        ["height", "180"],
+        ["fill", "none"],
+        ["stroke", "black"],
+        ["stroke-width", "2"],
+    ];
+    for atr in tbl {
+        rect.addattrib(Attrib::from(atr[0], atr[1]));
+    }
     ret.addchild(rect);
 
     // horizontal lines
     for i in 0..4 {
         let mut rect = Tag::new("rect");
         let tbl = [
-            Attrib::from("x", "0"),
-            Attrib::from("width", "180"),
-            Attrib::from("height", "20"),
-            Attrib::from("fill", "none"),
-            Attrib::from("stroke", "black"),
-            Attrib::from("stroke-width", "1"),
+            ["x", "0"],
+            ["width", "180"],
+            ["height", "20"],
+            ["fill", "none"],
+            ["stroke", "black"],
+            ["stroke-width", "1"],
         ];
         for atr in tbl {
-            rect.addattrib(atr);
+            rect.addattrib(Attrib::from(atr[0], atr[1]));
         }
         rect.addattrib(Attrib::new("y", format!("{}", i * 40 + 20)));
         ret.addchild(rect);
@@ -419,15 +424,15 @@ fn banborder() -> Tag {
     for i in 0..4 {
         let mut rect = Tag::new("rect");
         let tbl = [
-            Attrib::from("y", "0"),
-            Attrib::from("width", "20"),
-            Attrib::from("height", "180"),
-            Attrib::from("fill", "none"),
-            Attrib::from("stroke", "black"),
-            Attrib::from("stroke-width", "1"),
+            ["y", "0"],
+            ["width", "180"],
+            ["height", "20"],
+            ["fill", "none"],
+            ["stroke", "black"],
+            ["stroke-width", "1"],
         ];
         for atr in tbl {
-            rect.addattrib(atr);
+            rect.addattrib(Attrib::from(atr[0], atr[1]));
         }
         rect.addattrib(Attrib::new("x", format!("{}", i * 40 + 20)));
         ret.addchild(rect);
