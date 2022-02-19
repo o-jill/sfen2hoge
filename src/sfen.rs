@@ -331,6 +331,7 @@ impl Sfen {
                         gban.addchild(gdan)
                     }
                 }
+                gban.addchild(banborder());
                 Ok(gban)
             }
             Err(msg) => return Err(msg),
@@ -380,4 +381,93 @@ fn komatag(k: &Koma, x: i32, y: i32) -> Option<Tag> {
     gote.addchild(tag);
     kt.addchild(gote);
     Some(kt)
+}
+fn banborder() -> Tag {
+    let mut ret = Tag::new("g");
+    ret.addattrib(Attrib::from("id", "ban"));
+    let mut rect = Tag::new("rect");
+
+    // <rect x='0' y='0' width='180' height='180' fill='none' stroke='black' stroke-width='2'/>
+    rect.addattrib(Attrib::from("x", "0"));
+    rect.addattrib(Attrib::from("y", "0"));
+    rect.addattrib(Attrib::from("width", "180"));
+    rect.addattrib(Attrib::from("height", "180"));
+    rect.addattrib(Attrib::from("fill", "none"));
+    rect.addattrib(Attrib::from("stroke", "black"));
+    rect.addattrib(Attrib::from("stroke-width", "2"));
+    ret.addchild(rect);
+
+    // horizontal lines
+    for i in 0..4 {
+        let mut rect = Tag::new("rect");
+        let tbl = [
+            Attrib::from("x", "0"),
+            Attrib::from("width", "180"),
+            Attrib::from("height", "20"),
+            Attrib::from("fill", "none"),
+            Attrib::from("stroke", "black"),
+            Attrib::from("stroke-width", "1"),
+        ];
+        for atr in tbl {
+            rect.addattrib(atr);
+        }
+        rect.addattrib(Attrib::new("y", format!("{}", i * 40 + 20)));
+        ret.addchild(rect);
+    }
+
+    // vertical lines
+    for i in 0..4 {
+        let mut rect = Tag::new("rect");
+        let tbl = [
+            Attrib::from("y", "0"),
+            Attrib::from("width", "20"),
+            Attrib::from("height", "180"),
+            Attrib::from("fill", "none"),
+            Attrib::from("stroke", "black"),
+            Attrib::from("stroke-width", "1"),
+        ];
+        for atr in tbl {
+            rect.addattrib(atr);
+        }
+        rect.addattrib(Attrib::new("x", format!("{}", i * 40 + 20)));
+        ret.addchild(rect);
+    }
+    // suji numbers
+    let mut suji = Tag::new("g");
+    suji.addattrib(Attrib::from("transform", "translate(0,-5)"));
+    for (i, ch) in "１２３４５６７８９".chars().enumerate() {
+        let atrs = [
+            Attrib::from("y", "0"),
+            Attrib::from("font-size", "10px"),
+            Attrib::from("text-anchor", "middle"),
+        ];
+        let mut txt = Tag::new("text");
+        for atr in atrs {
+            txt.addattrib(atr);
+        }
+        txt.addattrib(Attrib::new("x", format!("{}", i * 20 + 10)));
+        txt.value = ch.to_string();
+        suji.addchild(txt);
+    }
+    ret.addchild(suji);
+
+    // dan numbers
+    let mut dan = Tag::new("g");
+    dan.addattrib(Attrib::from("transform", "translate(183,0)"));
+    for (i, ch) in "一二三四五六七八九".chars().enumerate() {
+        let atrs = [
+            Attrib::from("x", "0"),
+            Attrib::from("font-size", "10px"),
+            Attrib::from("text-anchor", "left"),
+        ];
+        let mut txt = Tag::new("text");
+        for atr in atrs {
+            txt.addattrib(atr);
+        }
+        txt.addattrib(Attrib::new("y", format!("{}", i * 20 + 13)));
+        txt.value = ch.to_string();
+        dan.addchild(txt);
+    }
+    ret.addchild(dan);
+    ret
 }
