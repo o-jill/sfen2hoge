@@ -335,11 +335,68 @@ impl Sfen {
         }
     }
 
+    pub fn buildtegoma(&self) -> Result<(Tag, Tag), String> {
+        match self.extracttegoma() {
+            Ok((sentegoma, gotegoma)) => {
+                /*<g id='stegoma' transform='translate(235,75)'>
+                 <g transform='translate(4,-7)'>
+                  <polygon points='0,-5 4,-4 5,5 -5,5 -4,-4' fill='black' stroke='black'/>
+                 </g>
+                 <g transform='translate(4,20)'></g>
+                </g>*/
+                let mut st = Tag::new("g");
+                st.newattrib("id", "stegoma");
+                st.newattrib("transform", "translate(239,75)");
+                let mut tt = Tag::new("g");
+                tt.newattrib("transform", "translate(0,-7)");
+                let mut poly = Tag::new("polygon");
+                poly.newattrib("points", "0,-5 4,-4 5,5 -5,5 -4,-4");
+                poly.newattrib("fill", "black");
+                poly.newattrib("stroke", "black");
+                tt.addchild(poly);
+                st.addchild(tt);
+                let mut y = 20;
+                for tgm in sentegoma {
+                    let mut tag = Tag::new("text");
+                    let atr = [("x", "0"), ("font-size", "16px"), ("text-anchor", "middle")];
+                    for (nm, val) in atr {
+                        tag.newattrib(nm, val);
+                    }
+                    tag.addattrib(Attrib::new("y", format!("{}", y)));
+                    tag.value = tgm.koma.to_string(Promotion::None);
+                    st.addchild(tag);
+
+                    if tgm.num > 1 {
+                        let mut tag = Tag::new("text");
+                        let atr = [("x", "8"), ("font-size", "12px"), ("text-anchor", "left")];
+                        for (nm, val) in atr {
+                            tag.newattrib(nm, val);
+                        }
+                        tag.addattrib(Attrib::new("y", format!("{}", y)));
+                        tag.value = format!("{}", tgm.num);
+                        st.addchild(tag);
+                    }
+                    y += 20;
+                }
+                let gt = Tag::new("g");
+                Ok((st, gt))
+            }
+            Err(msg) => Err(msg),
+        }
+    }
+
     pub fn to_svg(&self) -> Result<SVG, String> {
         let mut top = Tag::new("g");
         match self.buildboard() {
             Ok(tag) => {
                 top.addchild(tag);
+            }
+            Err(msg) => return Err(msg),
+        }
+        match self.buildtegoma() {
+            Ok((st, gt)) => {
+                top.addchild(st);
+                top.addchild(gt);
             }
             Err(msg) => return Err(msg),
         }
