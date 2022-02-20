@@ -338,12 +338,6 @@ impl Sfen {
     pub fn buildtegoma(&self) -> Result<(Tag, Tag), String> {
         match self.extracttegoma() {
             Ok((sentegoma, gotegoma)) => {
-                /*<g id='stegoma' transform='translate(235,75)'>
-                 <g transform='translate(4,-7)'>
-                  <polygon points='0,-5 4,-4 5,5 -5,5 -4,-4' fill='black' stroke='black'/>
-                 </g>
-                 <g transform='translate(4,20)'></g>
-                </g>*/
                 let mut st = Tag::new("g");
                 st.newattrib("id", "stegoma");
                 st.newattrib("transform", "translate(239,75)");
