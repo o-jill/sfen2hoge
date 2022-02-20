@@ -372,7 +372,41 @@ impl Sfen {
                     }
                     y += 20;
                 }
-                let gt = Tag::new("g");
+
+                let mut gt = Tag::new("g");
+                gt.newattrib("id", "gtegoma");
+                gt.newattrib("transform", "translate(9,75)");
+                let mut tt = Tag::new("g");
+                tt.newattrib("transform", "translate(0,-7)");
+                let mut poly = Tag::new("polygon");
+                poly.newattrib("points", "0,-5 4,-4 5,5 -5,5 -4,-4");
+                poly.newattrib("fill", "none");
+                poly.newattrib("stroke", "black");
+                tt.addchild(poly);
+                gt.addchild(tt);
+                let mut y = 20;
+                for tgm in gotegoma {
+                    let mut tag = Tag::new("text");
+                    let atr = [("x", "0"), ("font-size", "16px"), ("text-anchor", "middle")];
+                    for (nm, val) in atr {
+                        tag.newattrib(nm, val);
+                    }
+                    tag.addattrib(Attrib::new("y", format!("{}", y)));
+                    tag.value = tgm.koma.to_string(Promotion::None);
+                    gt.addchild(tag);
+
+                    if tgm.num > 1 {
+                        let mut tag = Tag::new("text");
+                        let atr = [("x", "8"), ("font-size", "12px"), ("text-anchor", "left")];
+                        for (nm, val) in atr {
+                            tag.newattrib(nm, val);
+                        }
+                        tag.addattrib(Attrib::new("y", format!("{}", y)));
+                        tag.value = format!("{}", tgm.num);
+                        gt.addchild(tag);
+                    }
+                    y += 20;
+                }
                 Ok((st, gt))
             }
             Err(msg) => Err(msg),
