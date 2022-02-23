@@ -443,6 +443,80 @@ impl Sfen {
         }
     }
 
+    fn build_sentename(&self, sname: String) -> Option<Tag> {
+        if sname.is_empty() {
+            return None;
+        }
+
+        let mut gs = Tag::new("g");
+        gs.newattrib("id", "sname");
+        gs.newattrib("transform", "translate(5,250)");
+        let mut gp = Tag::new("g");
+        gp.newattrib("transform", "translate(230,0)");
+        let mut pl = Tag::new("polygon");
+        let atr = [
+            ("points", "10,0 18,2 20,20 0,20 2,2"),
+            ("fill", "black"),
+            ("stroke", "black"),
+            ("stroke-width", "1"),
+        ];
+        for (nm, val) in atr {
+            pl.newattrib(nm, val);
+        }
+        gp.addchild(pl);
+        gs.addchild(gp);
+        let mut txt = Tag::new("text");
+        let atr = [
+            ("x", "0"),
+            ("y", "15"),
+            ("font-size", "16px"),
+            ("text-anchor", "left"),
+            ("width", "230px"),
+            ("text-overflow", "ellipsis"),
+        ];
+        for (nm, val) in atr {
+            txt.newattrib(nm, val);
+        }
+        txt.value = sname;
+        gs.addchild(txt);
+        Some(gs)
+    }
+
+    fn build_gotename(&self, gnm: String) -> Option<Tag> {
+        if gnm.is_empty() {
+            return None;
+        }
+        let mut gg = Tag::new("g");
+        gg.newattrib("id", "gname");
+        gg.newattrib("transform", "translate(5,25)");
+        let mut pl = Tag::new("polygon");
+        let atr = [
+            ("points", "10,0 18,2 20,20 0,20 2,2"),
+            ("fill", "none"),
+            ("stroke", "black"),
+            ("stroke-width", "1"),
+        ];
+        for (nm, val) in atr {
+            pl.newattrib(nm, val);
+        }
+        gg.addchild(pl);
+        let mut txt = Tag::new("text");
+        let atr = [
+            ("x", "25"),
+            ("y", "15"),
+            ("font-size", "16px"),
+            ("text-anchor", "left"),
+            ("width", "230px"),
+            ("text-overflow", "ellipsis"),
+        ];
+        for (nm, val) in atr {
+            txt.newattrib(nm, val);
+        }
+        txt.value = gnm;
+        gg.addchild(txt);
+        Some(gg)
+    }
+
     pub fn to_svg(
         &self,
         lastmove: Option<(usize, usize)>,
@@ -450,6 +524,14 @@ impl Sfen {
         gname: String,
     ) -> Result<SVG, String> {
         let mut top = Tag::new("g");
+        let ts = self.build_sentename(sname);
+        if ts.is_some() {
+            top.addchild(ts.unwrap());
+        }
+        let tg = self.build_gotename(gname);
+        if tg.is_some() {
+            top.addchild(tg.unwrap());
+        }
         match self.buildboard(lastmove) {
             Ok(tag) => {
                 top.addchild(tag);
