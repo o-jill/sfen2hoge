@@ -526,7 +526,7 @@ fn banborder() -> Tag {
     // suji numbers
     let mut suji = Tag::new("g");
     suji.newattrib("transform", "translate(0,-5)");
-    for (i, ch) in "１２３４５６７８９".chars().enumerate() {
+    for (i, ch) in "９８７６５４３２１".chars().enumerate() {
         let atrs = [("y", "0"), ("font-size", "10px"), ("text-anchor", "middle")];
         let mut txt = Tag::new("text");
         for (nm, val) in atrs {
