@@ -308,13 +308,38 @@ impl Sfen {
         }
     }
 
-    fn buildboard(&self) -> Result<Tag, String> {
+    fn buildboard(&self, lastmove: Option<(usize, usize)>) -> Result<Tag, String> {
         match self.extractban() {
             Ok(ban) => {
                 let mut gban = Tag::new("g");
                 gban.newattrib("id", "board");
                 gban.newattrib("transform", "translate(35,65)");
+
+                if lastmove.is_some() {
+                    let (suji, dan) = lastmove.unwrap();
+                    let mut glm = Tag::new("g");
+                    glm.newattrib("id", "lastmove");
+                    glm.newattrib(
+                        "transform",
+                        &format!("translate({}, {})", 180 - suji * 20, dan * 20 - 20),
+                    );
+                    let mut rect = Tag::new("rect");
+                    let atr = [
+                        ("x", "0"),
+                        ("y", "0"),
+                        ("width", "20"),
+                        ("height", "20"),
+                        ("fill", "#FF4"),
+                    ];
+                    for (nm, val) in atr {
+                        rect.newattrib(nm, val);
+                    }
+                    glm.addchild(rect);
+                    gban.addchild(glm);
+                }
+
                 gban.addchild(banborder());
+
                 for (i, dan) in ban.iter().enumerate() {
                     let mut gdan = Tag::new("g");
                     gdan.addattrib(Attrib::new("id", format!("dan{}", i + 1)));
@@ -413,9 +438,9 @@ impl Sfen {
         }
     }
 
-    pub fn to_svg(&self) -> Result<SVG, String> {
+    pub fn to_svg(&self, lastmove: Option<(usize, usize)>) -> Result<SVG, String> {
         let mut top = Tag::new("g");
-        match self.buildboard() {
+        match self.buildboard(lastmove) {
             Ok(tag) => {
                 top.addchild(tag);
             }

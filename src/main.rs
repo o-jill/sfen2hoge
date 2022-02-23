@@ -10,14 +10,21 @@ enum Mode {
 }
 
 struct LastMove {
-    suji: usize,
-    dan: usize,
-    koma: sfen::Koma,
+    pub suji: usize,
+    pub dan: usize,
+    pub koma: sfen::Koma,
 }
 
 impl LastMove {
-    fn is_ok(&self) -> bool {
+    pub fn is_ok(&self) -> bool {
         self.suji > 0 && self.dan > 0
+    }
+    pub fn safe(&self) -> Option<(usize, usize)> {
+        if self.is_ok() {
+            Some((self.suji, self.dan))
+        } else {
+            None
+        }
     }
 }
 struct MyOptions {
@@ -88,10 +95,10 @@ fn main() {
 
     match mo.mode {
         Mode::SVG => {
-            if mo.lastmove.is_ok(){
+            if mo.lastmove.is_ok() {
                 // sfen.set_lastmove();
             }
-            match sfen.to_svg() {
+            match sfen.to_svg(mo.lastmove.safe()) {
                 Ok(svg) => println!("{}", svg.to_string()),
                 Err(msg) => println!("Error:{}", msg),
             };
