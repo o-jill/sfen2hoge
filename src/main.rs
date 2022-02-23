@@ -9,6 +9,13 @@ enum Mode {
     PNG,
 }
 
+#[derive(PartialEq)]
+enum OptionMode {
+    Sfen,
+    SenteName,
+    GoteName,
+}
+
 struct LastMove {
     pub suji: usize,
     pub dan: usize,
@@ -28,8 +35,10 @@ impl LastMove {
     }
 }
 struct MyOptions {
-    mode: Mode,
-    lastmove: LastMove,
+    pub mode: Mode,
+    pub lastmove: LastMove,
+    pub sname: String,
+    pub gname: String,
 }
 
 fn help(msg: String) {
@@ -62,9 +71,12 @@ fn main() {
             dan: 0,
             koma: sfen::Koma::from(' ', sfen::Promotion::None),
         },
+        sname: String::new(),
+        gname: String::new(),
     };
 
     let reg_last = regex::Regex::new("--last([1-9])([1-9])").unwrap();
+    let mut lastop = OptionMode::Sfen;
     for e in args[1..].iter() {
         if e == "--svg" {
             mo.mode = Mode::SVG;
@@ -75,6 +87,10 @@ fn main() {
         } else if e == "--help" {
             help(String::new());
             return;
+        } else if e == "--sente" {
+            lastop = OptionMode::SenteName;
+        } else if e == "--gote" {
+            lastop = OptionMode::GoteName;
         } else if reg_last.is_match(e) {
             let cap = reg_last.captures(e).unwrap();
             if cap.len() != 3 {
@@ -87,7 +103,15 @@ fn main() {
             help(format!("invalid option {}.", e));
             return;
         } else {
-            txt = e;
+            if lastop == OptionMode::SenteName {
+                mo.sname = e.to_string();
+                lastop = OptionMode::Sfen;
+            } else if lastop == OptionMode::GoteName {
+                mo.gname = e.to_string();
+                lastop = OptionMode::Sfen;
+            } else {
+                txt = e;
+            }
         }
     }
 
@@ -95,10 +119,7 @@ fn main() {
 
     match mo.mode {
         Mode::SVG => {
-            if mo.lastmove.is_ok() {
-                // sfen.set_lastmove();
-            }
-            match sfen.to_svg(mo.lastmove.safe()) {
+            match sfen.to_svg(mo.lastmove.safe(), mo.sname, mo.gname) {
                 Ok(svg) => println!("{}", svg.to_string()),
                 Err(msg) => println!("Error:{}", msg),
             };

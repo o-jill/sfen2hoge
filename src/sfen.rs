@@ -443,7 +443,12 @@ impl Sfen {
         }
     }
 
-    pub fn to_svg(&self, lastmove: Option<(usize, usize)>) -> Result<SVG, String> {
+    pub fn to_svg(
+        &self,
+        lastmove: Option<(usize, usize)>,
+        sname: String,
+        gname: String,
+    ) -> Result<SVG, String> {
         let mut top = Tag::new("g");
         match self.buildboard(lastmove) {
             Ok(tag) => {
