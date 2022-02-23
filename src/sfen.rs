@@ -308,6 +308,28 @@ impl Sfen {
         }
     }
 
+    fn build_lastmove(&self, suji: usize, dan: usize) -> Tag {
+        let mut glm = Tag::new("g");
+        glm.newattrib("id", "lastmove");
+        glm.newattrib(
+            "transform",
+            &format!("translate({}, {})", 180 - suji * 20, dan * 20 - 20),
+        );
+        let mut rect = Tag::new("rect");
+        let atr = [
+            ("x", "0"),
+            ("y", "0"),
+            ("width", "20"),
+            ("height", "20"),
+            ("fill", "#FF4"),
+        ];
+        for (nm, val) in atr {
+            rect.newattrib(nm, val);
+        }
+        glm.addchild(rect);
+        glm
+    }
+
     fn buildboard(&self, lastmove: Option<(usize, usize)>) -> Result<Tag, String> {
         match self.extractban() {
             Ok(ban) => {
@@ -316,26 +338,9 @@ impl Sfen {
                 gban.newattrib("transform", "translate(35,65)");
 
                 if lastmove.is_some() {
-                    let (suji, dan) = lastmove.unwrap();
-                    let mut glm = Tag::new("g");
-                    glm.newattrib("id", "lastmove");
-                    glm.newattrib(
-                        "transform",
-                        &format!("translate({}, {})", 180 - suji * 20, dan * 20 - 20),
-                    );
-                    let mut rect = Tag::new("rect");
-                    let atr = [
-                        ("x", "0"),
-                        ("y", "0"),
-                        ("width", "20"),
-                        ("height", "20"),
-                        ("fill", "#FF4"),
-                    ];
-                    for (nm, val) in atr {
-                        rect.newattrib(nm, val);
-                    }
-                    glm.addchild(rect);
-                    gban.addchild(glm);
+                    let lm = lastmove.unwrap();
+                    let lm = self.build_lastmove(lm.0, lm.1);
+                    gban.addchild(lm);
                 }
 
                 gban.addchild(banborder());
