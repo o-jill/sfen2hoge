@@ -443,11 +443,7 @@ impl Sfen {
         }
     }
 
-    fn build_sentename(&self, sname: String) -> Option<Tag> {
-        if sname.is_empty() {
-            return None;
-        }
-
+    fn build_sentename(&self, name: String) -> Tag {
         let mut gs = Tag::new("g");
         gs.newattrib("id", "sname");
         gs.newattrib("transform", "translate(5,250)");
@@ -465,6 +461,11 @@ impl Sfen {
         }
         gp.addchild(pl);
         gs.addchild(gp);
+
+        if name.is_empty() {
+            return gs;
+        }
+
         let mut txt = Tag::new("text");
         let atr = [
             ("x", "0"),
@@ -477,15 +478,12 @@ impl Sfen {
         for (nm, val) in atr {
             txt.newattrib(nm, val);
         }
-        txt.value = sname;
+        txt.value = name;
         gs.addchild(txt);
-        Some(gs)
+        gs
     }
 
-    fn build_gotename(&self, gnm: String) -> Option<Tag> {
-        if gnm.is_empty() {
-            return None;
-        }
+    fn build_gotename(&self, name: String) -> Tag {
         let mut gg = Tag::new("g");
         gg.newattrib("id", "gname");
         gg.newattrib("transform", "translate(5,25)");
@@ -500,6 +498,11 @@ impl Sfen {
             pl.newattrib(nm, val);
         }
         gg.addchild(pl);
+
+        if name.is_empty() {
+            return gg;
+        }
+
         let mut txt = Tag::new("text");
         let atr = [
             ("x", "25"),
@@ -512,9 +515,9 @@ impl Sfen {
         for (nm, val) in atr {
             txt.newattrib(nm, val);
         }
-        txt.value = gnm;
+        txt.value = name;
         gg.addchild(txt);
-        Some(gg)
+        gg
     }
 
     fn build_title(&self, title: String) -> Option<Tag> {
@@ -541,6 +544,58 @@ impl Sfen {
         Some(gt)
     }
 
+    fn build_teban(&self) -> Option<Tag> {
+        let mut gt = Tag::new("g");
+        gt.newattrib("id", "teban");
+
+        let rectatb = [
+            ("x", "0"),
+            ("y", "0"),
+            ("width", "30"),
+            ("height", "30"),
+            ("fill", "#F3C"),
+            ("stroke", "none")
+        ];
+        let polyatb = [
+            ("points", "15,0 22.5,5 30,0 30,30 0,30 0,0 7.5,5"),
+            ("fill", "#F3C"),
+            ("stroke", "none")
+        ];
+    if self.teban == "w" {
+            gt.newattrib("transform", "translate(0,20)");
+
+            let mut mark = Tag::new("rect");
+            for (nm, val) in rectatb {
+                mark.newattrib(nm, val);
+            }
+            gt.addchild(mark);
+        } else if self.teban == "b" {
+            gt.newattrib("transform", "translate(230,245)");
+            let mut mark = Tag::new("rect");
+            for (nm, val) in rectatb {
+                mark.newattrib(nm, val);
+            }
+            gt.addchild(mark);
+        } else if self.teban == "fw" {
+            gt.newattrib("transform", "translate(30,20)");
+            let mut mark = Tag::new("rect");
+            for (nm, val) in polyatb {
+                mark.newattrib(nm, val);
+            }
+            gt.addchild(mark);
+        } else if self.teban == "fb" {
+            gt.newattrib("transform", "translate(0,245)");
+            let mut mark = Tag::new("rect");
+            for (nm, val) in polyatb {
+                mark.newattrib(nm, val);
+            }
+            gt.addchild(mark);
+        } else {
+            return None;
+        }
+        Some(gt)
+    }
+
     pub fn to_svg(
         &self,
         lastmove: Option<(usize, usize)>,
@@ -553,14 +608,12 @@ impl Sfen {
         if ttl.is_some() {
             top.addchild(ttl.unwrap());
         }
-        let ts = self.build_sentename(sname);
-        if ts.is_some() {
-            top.addchild(ts.unwrap());
+        let tbn = self.build_teban();
+        if tbn.is_some() {
+            top.addchild(tbn.unwrap());
         }
-        let tg = self.build_gotename(gname);
-        if tg.is_some() {
-            top.addchild(tg.unwrap());
-        }
+        top.addchild(self.build_sentename(sname));
+        top.addchild(self.build_gotename(gname));
         match self.buildboard(lastmove) {
             Ok(tag) => {
                 top.addchild(tag);
