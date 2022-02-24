@@ -541,6 +541,58 @@ impl Sfen {
         Some(gt)
     }
 
+    fn build_teban(&self) -> Option<Tag> {
+        let mut gt = Tag::new("g");
+        gt.newattrib("id", "teban");
+
+        let rectatb = [
+            ("x", "0"),
+            ("y", "0"),
+            ("width", "30"),
+            ("height", "30"),
+            ("fill", "#F3C"),
+            ("stroke", "none")
+        ];
+        let polyatb = [
+            ("points", "15,0 22.5,5 30,0 30,30 0,30 0,0 7.5,5"),
+            ("fill", "#F3C"),
+            ("stroke", "none")
+        ];
+    if self.teban == "w" {
+            gt.newattrib("transform", "translate(0,20)");
+
+            let mut mark = Tag::new("rect");
+            for (nm, val) in rectatb {
+                mark.newattrib(nm, val);
+            }
+            gt.addchild(mark);
+        } else if self.teban == "b" {
+            gt.newattrib("transform", "translate(230,245)");
+            let mut mark = Tag::new("rect");
+            for (nm, val) in rectatb {
+                mark.newattrib(nm, val);
+            }
+            gt.addchild(mark);
+        } else if self.teban == "fw" {
+            gt.newattrib("transform", "translate(30,20)");
+            let mut mark = Tag::new("rect");
+            for (nm, val) in polyatb {
+                mark.newattrib(nm, val);
+            }
+            gt.addchild(mark);
+        } else if self.teban == "fb" {
+            gt.newattrib("transform", "translate(0,245)");
+            let mut mark = Tag::new("rect");
+            for (nm, val) in polyatb {
+                mark.newattrib(nm, val);
+            }
+            gt.addchild(mark);
+        } else {
+            return None;
+        }
+        Some(gt)
+    }
+
     pub fn to_svg(
         &self,
         lastmove: Option<(usize, usize)>,
@@ -552,6 +604,10 @@ impl Sfen {
         let ttl = self.build_title(title);
         if ttl.is_some() {
             top.addchild(ttl.unwrap());
+        }
+        let tbn = self.build_teban();
+        if tbn.is_some() {
+            top.addchild(tbn.unwrap());
         }
         let ts = self.build_sentename(sname);
         if ts.is_some() {
