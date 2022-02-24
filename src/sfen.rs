@@ -443,11 +443,7 @@ impl Sfen {
         }
     }
 
-    fn build_sentename(&self, sname: String) -> Option<Tag> {
-        if sname.is_empty() {
-            return None;
-        }
-
+    fn build_sentename(&self, name: String) -> Tag {
         let mut gs = Tag::new("g");
         gs.newattrib("id", "sname");
         gs.newattrib("transform", "translate(5,250)");
@@ -465,6 +461,11 @@ impl Sfen {
         }
         gp.addchild(pl);
         gs.addchild(gp);
+
+        if name.is_empty() {
+            return gs;
+        }
+
         let mut txt = Tag::new("text");
         let atr = [
             ("x", "0"),
@@ -477,15 +478,12 @@ impl Sfen {
         for (nm, val) in atr {
             txt.newattrib(nm, val);
         }
-        txt.value = sname;
+        txt.value = name;
         gs.addchild(txt);
-        Some(gs)
+        gs
     }
 
-    fn build_gotename(&self, gnm: String) -> Option<Tag> {
-        if gnm.is_empty() {
-            return None;
-        }
+    fn build_gotename(&self, name: String) -> Tag {
         let mut gg = Tag::new("g");
         gg.newattrib("id", "gname");
         gg.newattrib("transform", "translate(5,25)");
@@ -500,6 +498,11 @@ impl Sfen {
             pl.newattrib(nm, val);
         }
         gg.addchild(pl);
+
+        if name.is_empty() {
+            return gg;
+        }
+
         let mut txt = Tag::new("text");
         let atr = [
             ("x", "25"),
@@ -512,9 +515,9 @@ impl Sfen {
         for (nm, val) in atr {
             txt.newattrib(nm, val);
         }
-        txt.value = gnm;
+        txt.value = name;
         gg.addchild(txt);
-        Some(gg)
+        gg
     }
 
     fn build_title(&self, title: String) -> Option<Tag> {
@@ -609,14 +612,8 @@ impl Sfen {
         if tbn.is_some() {
             top.addchild(tbn.unwrap());
         }
-        let ts = self.build_sentename(sname);
-        if ts.is_some() {
-            top.addchild(ts.unwrap());
-        }
-        let tg = self.build_gotename(gname);
-        if tg.is_some() {
-            top.addchild(tg.unwrap());
-        }
+        top.addchild(self.build_sentename(sname));
+        top.addchild(self.build_gotename(gname));
         match self.buildboard(lastmove) {
             Ok(tag) => {
                 top.addchild(tag);
