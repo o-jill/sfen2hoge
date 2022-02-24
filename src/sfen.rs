@@ -517,13 +517,42 @@ impl Sfen {
         Some(gg)
     }
 
+    fn build_title(&self, title: String) -> Option<Tag> {
+        if title.is_empty() {
+            return None;
+        }
+        let mut gt = Tag::new("g");
+        gt.newattrib("id", "title");
+        // gg.newattrib("transform", "translate(5,25)");
+        let mut txt = Tag::new("text");
+        let atr = [
+            ("x", "130"),
+            ("y", "15"),
+            ("font-size", "16px"),
+            ("text-anchor", "middle"),
+            ("width", "260px"),
+            ("text-overflow", "ellipsis"),
+        ];
+        for (nm, val) in atr {
+            txt.newattrib(nm, val);
+        }
+        txt.value = title;
+        gt.addchild(txt);
+        Some(gt)
+    }
+
     pub fn to_svg(
         &self,
         lastmove: Option<(usize, usize)>,
         sname: String,
         gname: String,
+        title: String
     ) -> Result<SVG, String> {
         let mut top = Tag::new("g");
+        let ttl = self.build_title(title);
+        if ttl.is_some() {
+            top.addchild(ttl.unwrap());
+        }
         let ts = self.build_sentename(sname);
         if ts.is_some() {
             top.addchild(ts.unwrap());

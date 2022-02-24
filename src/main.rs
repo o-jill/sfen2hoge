@@ -14,6 +14,7 @@ enum OptionMode {
     Sfen,
     SenteName,
     GoteName,
+    Title,
 }
 
 struct LastMove {
@@ -39,6 +40,7 @@ struct MyOptions {
     pub lastmove: LastMove,
     pub sname: String,
     pub gname: String,
+    pub title:String,
 }
 
 fn help(msg: String) {
@@ -53,6 +55,9 @@ fn help(msg: String) {
     println!("\t--svg  : svg style.");
     println!("\t--png  : png style.");
     println!("\t--last[suji][dan] : emphasizing last move.");
+    println!("\t--sente \"John Doe\" : set sente's name.");
+    println!("\t--gote \"名無権兵衛\" : set gote's name.");
+    println!("\t--title \"title\" : set title.");
     println!("\t--help : show this help.");
 }
 
@@ -73,6 +78,7 @@ fn main() {
         },
         sname: String::new(),
         gname: String::new(),
+        title: String::new(),
     };
 
     let reg_last = regex::Regex::new("--last([1-9])([1-9])").unwrap();
@@ -91,6 +97,8 @@ fn main() {
             lastop = OptionMode::SenteName;
         } else if e == "--gote" {
             lastop = OptionMode::GoteName;
+        } else if e == "--title" {
+            lastop = OptionMode::Title;
         } else if reg_last.is_match(e) {
             let cap = reg_last.captures(e).unwrap();
             if cap.len() != 3 {
@@ -109,6 +117,9 @@ fn main() {
             } else if lastop == OptionMode::GoteName {
                 mo.gname = e.to_string();
                 lastop = OptionMode::Sfen;
+            } else if lastop == OptionMode::Title {
+                mo.title = e.to_string();
+                lastop = OptionMode::Sfen;
             } else {
                 txt = e;
             }
@@ -119,7 +130,7 @@ fn main() {
 
     match mo.mode {
         Mode::SVG => {
-            match sfen.to_svg(mo.lastmove.safe(), mo.sname, mo.gname) {
+            match sfen.to_svg(mo.lastmove.safe(), mo.sname, mo.gname, mo.title) {
                 Ok(svg) => println!("{}", svg.to_string()),
                 Err(msg) => println!("Error:{}", msg),
             };
