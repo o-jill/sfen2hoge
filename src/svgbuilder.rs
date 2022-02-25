@@ -64,6 +64,8 @@ impl Tag {
                 chld = self.child2string(indent.clone()),
                 ind = indent
             )
+        } else if self.value.is_empty() {
+            format!("{}<{}{} />\n", indent, self.name, self.attrib2string(),)
         } else {
             format!(
                 "{}<{}{}>{}</{}>\n",
