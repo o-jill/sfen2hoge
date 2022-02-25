@@ -153,11 +153,15 @@ fn tostrtest() {
 pub enum Promotion {
     None,
     Promoted,
+    NotPromoted,
 }
 
 impl Promotion {
     pub fn is_promoted(&self) -> bool {
         *self == Promotion::Promoted
+    }
+    pub fn is_notpromoted(&self) -> bool {
+        *self == Promotion::NotPromoted
     }
 }
 
@@ -1161,6 +1165,7 @@ pub struct LastMove {
 }
 
 impl LastMove {
+    // 7776FUPNLRAHCY
     pub fn read(txt: &str) -> Result<LastMove, String> {
         let mut lm = LastMove {
             from: (0, 0),
@@ -1169,7 +1174,7 @@ impl LastMove {
             promote: sfen::Promotion::None,
             dir: String::new(),
         };
-        let re = regex::Regex::new("(\\d\\d)(\\d\\d)([a-zA-Z][a-zA-Z])").unwrap();
+        let re = regex::Regex::new("(\\d\\d)(\\d\\d)([a-zA-Z][a-zA-Z])([PN]?)([LRAHCY]*)").unwrap();
         match re.captures(txt) {
             Some(cap) => {
                 let frm: usize = cap.get(1).map_or("", |s| s.as_str()).parse().unwrap();
@@ -1182,6 +1187,17 @@ impl LastMove {
                         return Err(format!("\"{}\" is invalid lastmove about koma.", txt));
                     }
                 }
+                match cap.get(4).map_or("", |s| s.as_str()) {
+                    "P" => {
+                        lm.promote = Promotion::Promoted;
+                    }
+                    "N" => {
+                        lm.promote = Promotion::NotPromoted;
+                    }
+                    _ => {}
+                }
+                lm.dir = cap.get(5).map_or("", |s| s.as_str()).to_string();
+
                 Ok(lm)
             }
             None => Err(format!("\"{}\" is invalid lastmove.", txt)),
