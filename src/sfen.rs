@@ -217,6 +217,104 @@ impl Koma {
     }
 }
 
+#[test]
+fn komatest() {
+    let prm = Promotion::None;
+    let k = Koma::from(' ', prm);
+    assert_eq!(k.koma, KomaType::Aki);
+    assert!(!k.promotion.is_promoted());
+    assert!(!k.is_sente());
+    assert!(!k.is_gote());
+    assert!(k.is_blank());
+    let k = Koma::from('P', prm);
+    assert_eq!(k.koma, KomaType::Fu);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_sente());
+    assert!(!k.is_blank());
+    let k = Koma::from('L', prm);
+    assert_eq!(k.koma, KomaType::Kyosha);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_sente());
+    assert!(!k.is_blank());
+    let k = Koma::from('N', prm);
+    assert_eq!(k.koma, KomaType::Keima);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_sente());
+    assert!(!k.is_blank());
+    let k = Koma::from('S', prm);
+    assert_eq!(k.koma, KomaType::Gin);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_sente());
+    assert!(!k.is_blank());
+    let k = Koma::from('G', prm);
+    assert_eq!(k.koma, KomaType::Kin);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_sente());
+    assert!(!k.is_blank());
+    let k = Koma::from('B', prm);
+    assert_eq!(k.koma, KomaType::Kaku);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_sente());
+    assert!(!k.is_blank());
+    let k = Koma::from('R', prm);
+    assert_eq!(k.koma, KomaType::Hisha);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_sente());
+    assert!(!k.is_blank());
+    let k = Koma::from('K', prm);
+    assert_eq!(k.koma, KomaType::Gyoku);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_sente());
+    assert!(!k.is_blank());
+
+    let k = Koma::from('_', prm);
+    assert_eq!(k.koma, KomaType::Aki);
+    assert!(!k.promotion.is_promoted());
+    assert!(!k.is_sente());
+    assert!(!k.is_gote());
+    assert!(k.is_blank());
+    let k = Koma::from('p', prm);
+    assert_eq!(k.koma, KomaType::Fu);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_gote());
+    assert!(!k.is_blank());
+    let k = Koma::from('l', prm);
+    assert_eq!(k.koma, KomaType::Kyosha);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_gote());
+    assert!(!k.is_blank());
+    let k = Koma::from('n', prm);
+    assert_eq!(k.koma, KomaType::Keima);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_gote());
+    assert!(!k.is_blank());
+    let k = Koma::from('s', prm);
+    assert_eq!(k.koma, KomaType::Gin);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_gote());
+    assert!(!k.is_blank());
+    let k = Koma::from('g', prm);
+    assert_eq!(k.koma, KomaType::Kin);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_gote());
+    assert!(!k.is_blank());
+    let k = Koma::from('b', prm);
+    assert_eq!(k.koma, KomaType::Kaku);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_gote());
+    assert!(!k.is_blank());
+    let k = Koma::from('r', prm);
+    assert_eq!(k.koma, KomaType::Hisha);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_gote());
+    assert!(!k.is_blank());
+    let k = Koma::from('k', prm);
+    assert_eq!(k.koma, KomaType::Gyoku);
+    assert!(!k.promotion.is_promoted());
+    assert!(k.is_gote());
+    assert!(!k.is_blank());
+}
+
 pub struct Tegoma {
     koma: KomaType,
     num: usize,
