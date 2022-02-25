@@ -516,6 +516,26 @@ impl Tegoma {
     }
 }
 
+#[test]
+fn testegoma() {
+    let tg = Tegoma::new('P', 19);
+    assert!(tg.to_kanji().is_err());
+    assert_eq!(tg.to_kanji().err().unwrap(), "歩??");
+    let tg = Tegoma::new('P', 0);
+    assert!(tg.to_kanji().is_ok());
+    assert_eq!(tg.to_kanji().unwrap(), "");
+    let kanjinum = [
+        /*"",*/ "", /*"一"*/
+        "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二", "十三", "十四",
+        "十五", "十六", "十七", "十八",
+    ];
+    for (i, x) in kanjinum.iter().enumerate() {
+        let tg = Tegoma::new('P', i + 1);
+        assert!(tg.to_kanji().is_ok());
+        assert_eq!(tg.to_kanji().unwrap(), format!("歩{}", x));
+    }
+}
+
 fn extractdan(txt: &str) -> Result<Vec<Koma>, String> {
     let mut res = Vec::<Koma>::new();
     let masu = txt.chars();
