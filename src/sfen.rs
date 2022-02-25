@@ -75,6 +75,78 @@ impl KomaType {
     }
 }
 
+#[test]
+fn fromtest() {
+    let k = KomaType::from(' ');
+    assert_eq!(k, KomaType::Aki);
+    let k = KomaType::from('P');
+    assert_eq!(k, KomaType::Fu);
+    let k = KomaType::from('L');
+    assert_eq!(k, KomaType::Kyosha);
+    let k = KomaType::from('N');
+    assert_eq!(k, KomaType::Keima);
+    let k = KomaType::from('S');
+    assert_eq!(k, KomaType::Gin);
+    let k = KomaType::from('G');
+    assert_eq!(k, KomaType::Kin);
+    let k = KomaType::from('B');
+    assert_eq!(k, KomaType::Kaku);
+    let k = KomaType::from('R');
+    assert_eq!(k, KomaType::Hisha);
+    let k = KomaType::from('K');
+    assert_eq!(k, KomaType::Gyoku);
+
+    let k = KomaType::from('_');
+    assert_eq!(k, KomaType::Aki);
+    let k = KomaType::from('p');
+    assert_eq!(k, KomaType::Fu);
+    let k = KomaType::from('l');
+    assert_eq!(k, KomaType::Kyosha);
+    let k = KomaType::from('n');
+    assert_eq!(k, KomaType::Keima);
+    let k = KomaType::from('s');
+    assert_eq!(k, KomaType::Gin);
+    let k = KomaType::from('g');
+    assert_eq!(k, KomaType::Kin);
+    let k = KomaType::from('b');
+    assert_eq!(k, KomaType::Kaku);
+    let k = KomaType::from('r');
+    assert_eq!(k, KomaType::Hisha);
+    let k = KomaType::from('k');
+    assert_eq!(k, KomaType::Gyoku);
+}
+
+#[test]
+fn tostrtest() {
+    let k = KomaType::from(' ');
+    assert_eq!(k.to_string(Promotion::None), "");
+    assert_eq!(k.to_string(Promotion::Promoted), "");
+    let k = KomaType::from('P');
+    assert_eq!(k.to_string(Promotion::None), "歩");
+    assert_eq!(k.to_string(Promotion::Promoted), "と");
+    let k = KomaType::from('L');
+    assert_eq!(k.to_string(Promotion::None), "香");
+    assert_eq!(k.to_string(Promotion::Promoted), "杏");
+    let k = KomaType::from('N');
+    assert_eq!(k.to_string(Promotion::None), "桂");
+    assert_eq!(k.to_string(Promotion::Promoted), "圭");
+    let k = KomaType::from('S');
+    assert_eq!(k.to_string(Promotion::None), "銀");
+    assert_eq!(k.to_string(Promotion::Promoted), "全");
+    let k = KomaType::from('G');
+    assert_eq!(k.to_string(Promotion::None), "金");
+    assert_eq!(k.to_string(Promotion::Promoted), "金");
+    let k = KomaType::from('B');
+    assert_eq!(k.to_string(Promotion::None), "角");
+    assert_eq!(k.to_string(Promotion::Promoted), "馬");
+    let k = KomaType::from('R');
+    assert_eq!(k.to_string(Promotion::None), "飛");
+    assert_eq!(k.to_string(Promotion::Promoted), "龍");
+    let k = KomaType::from('K');
+    assert_eq!(k.to_string(Promotion::None), "玉");
+    assert_eq!(k.to_string(Promotion::Promoted), "玉");
+}
+
 #[derive(PartialEq, Debug, Clone, Copy)]
 pub enum Promotion {
     None,
