@@ -658,7 +658,7 @@ impl Sfen {
         Ok((sentegoma, gotegoma))
     }
 
-    pub fn dump(&self) -> String {
+    pub fn dump(&self, sn: &str, gn: &str) -> String {
         let border = "+---------------------------+\n";
         let dannum = "一二三四五六七八九";
         let mut res = format!("  ９ ８ ７ ６ ５ ４ ３ ２ １\n{}", border);
@@ -684,19 +684,27 @@ impl Sfen {
         }
         match self.extracttegoma() {
             Ok((sentegoma, gotegoma)) => {
-                let tgmsen = sentegoma
-                    .iter()
-                    .map(|t| t.to_kanji().unwrap())
-                    .collect::<Vec<String>>()
-                    .join("");
-                let tgmgo = gotegoma
-                    .iter()
-                    .map(|t| t.to_kanji().unwrap())
-                    .collect::<Vec<String>>()
-                    .join("");
+                let tgmsen = if sentegoma.is_empty() {
+                    String::from("なし")
+                } else {
+                    sentegoma
+                        .iter()
+                        .map(|t| t.to_kanji().unwrap())
+                        .collect::<Vec<String>>()
+                        .join("")
+                };
+                let tgmgo = if gotegoma.is_empty() {
+                    String::from("なし")
+                } else {
+                    gotegoma
+                        .iter()
+                        .map(|t| t.to_kanji().unwrap())
+                        .collect::<Vec<String>>()
+                        .join("")
+                };
                 res = format!(
-                    "後手の持駒：{}\n{}{}先手の持駒：{}\n",
-                    tgmgo, res, border, tgmsen
+                    "後手：{}\n後手の持駒：{}\n{}{}先手の持駒：{}\n先手：{}\n",
+                    gn, tgmgo, res, border, tgmsen, sn
                 )
             }
             Err(msg) => return format!("error in [{}]:{}", self.tegoma, msg),

@@ -128,7 +128,7 @@ fn main() {
         Mode::PNG => println!("png will be here."),
         _ => {
             println!("sfen:{}", txt);
-            println!("{}", sfen.dump());
+            println!("{}", sfen.dump(&mo.sname, &mo.gname));
         }
     }
 }
