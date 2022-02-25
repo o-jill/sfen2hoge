@@ -628,14 +628,14 @@ impl Sfen {
             ("width", "30"),
             ("height", "30"),
             ("fill", "#F3C"),
-            ("stroke", "none")
+            ("stroke", "none"),
         ];
         let polyatb = [
             ("points", "15,0 22.5,5 30,0 30,30 0,30 0,0 7.5,5"),
             ("fill", "#F3C"),
-            ("stroke", "none")
+            ("stroke", "none"),
         ];
-    if self.teban == "w" {
+        if self.teban == "w" {
             gt.newattrib("transform", "translate(0,20)");
 
             let mut mark = Tag::new("rect");
@@ -675,7 +675,7 @@ impl Sfen {
         lastmove: Option<(usize, usize)>,
         sname: String,
         gname: String,
-        title: String
+        title: String,
     ) -> Result<SVG, String> {
         let mut top = Tag::new("g");
         let ttl = self.build_title(title);
