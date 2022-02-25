@@ -45,15 +45,17 @@ impl KomaType {
         .iter()
         .position(|&k| k == *self)
         .unwrap();
-        if promote.is_promoted() {
+        match if promote.is_promoted() {
             "と杏圭全金馬龍玉"
         } else {
             "歩香桂銀金角飛玉"
         }
         .chars()
         .nth(idx)
-        .unwrap()
-        .to_string()
+        {
+            Some(ch) => ch.to_string(),
+            None => String::new(),
+        }
     }
 
     pub fn from(ch: char) -> KomaType {
