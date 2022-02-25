@@ -18,56 +18,9 @@ enum OptionMode {
     LastMove,
 }
 
-#[derive(Debug)]
-struct LastMove {
-    pub from: (usize, usize),
-    pub to: (usize, usize),
-    pub koma: sfen::Koma,
-    pub promote: sfen::Promotion,
-    pub dir: String,
-}
-
-impl LastMove {
-    pub fn read(txt: &str) -> Result<LastMove, String> {
-        let mut lm = LastMove {
-            from: (0, 0),
-            to: (0, 0),
-            koma: sfen::Koma::from(' ', sfen::Promotion::None),
-            promote: sfen::Promotion::None,
-            dir: String::new(),
-        };
-        let re = regex::Regex::new("(\\d\\d)(\\d\\d)([a-zA-Z][a-zA-Z])").unwrap();
-        match re.captures(txt) {
-            Some(cap) => {
-                let frm: usize = cap.get(1).map_or("", |s| s.as_str()).parse().unwrap();
-                lm.from = (frm / 10, frm % 10);
-                let to: usize = cap.get(2).map_or("", |s| s.as_str()).parse().unwrap();
-                lm.to = (to / 10, to % 10);
-                match sfen::Koma::fromcsa(cap.get(3).map_or("", |s| s.as_str())) {
-                    Some(k) => lm.koma = k,
-                    None => {
-                        return Err(format!("\"{}\" is invalid lastmove about koma.", txt));
-                    }
-                }
-                Ok(lm)
-            }
-            None => Err(format!("\"{}\" is invalid lastmove.", txt)),
-        }
-    }
-    pub fn is_ok(&self) -> bool {
-        self.to.0 > 0 && self.to.1 > 0
-    }
-    pub fn topos(&self) -> Option<(usize, usize)> {
-        if self.is_ok() {
-            Some(self.to)
-        } else {
-            None
-        }
-    }
-}
 struct MyOptions {
     pub mode: Mode,
-    pub lastmove: LastMove,
+    pub lastmove: sfen::LastMove,
     pub sname: String,
     pub gname: String,
     pub title:String,
@@ -101,7 +54,7 @@ fn main() {
 
     let mut mo = MyOptions {
         mode: Mode::Text,
-        lastmove: LastMove {
+        lastmove: sfen::LastMove {
             from: (0, 0),
             to: (0, 0),
             koma: sfen::Koma::from(' ', sfen::Promotion::None),
@@ -146,7 +99,7 @@ fn main() {
                 mo.title = e.to_string();
                 lastop = OptionMode::Sfen;
             } else if lastop == OptionMode::LastMove {
-                match LastMove::read(e) {
+                match sfen::LastMove::read(e) {
                     Ok(lm) => {
                         // println!("{:?}", lm);
                         mo.lastmove = lm;
