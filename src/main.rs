@@ -23,7 +23,7 @@ struct MyOptions {
     pub lastmove: sfen::LastMove,
     pub sname: String,
     pub gname: String,
-    pub title:String,
+    pub title: String,
 }
 
 fn help(msg: String) {
