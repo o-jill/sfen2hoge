@@ -161,6 +161,14 @@ impl Promotion {
     }
 }
 
+#[test]
+fn promotest() {
+    let prm = Promotion::None;
+    assert_eq!(prm.is_promoted(), false);
+    let prm = Promotion::Promoted;
+    assert_eq!(prm.is_promoted(), true);
+}
+
 #[derive(Clone)]
 pub struct Koma {
     koma: KomaType,
