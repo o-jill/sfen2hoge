@@ -15,21 +15,51 @@ enum OptionMode {
     SenteName,
     GoteName,
     Title,
+    LastMove,
 }
 
+#[derive(Debug)]
 struct LastMove {
-    pub suji: usize,
-    pub dan: usize,
+    pub from: (usize, usize),
+    pub to: (usize, usize),
     pub koma: sfen::Koma,
+    pub promote: sfen::Promotion,
+    pub dir: String,
 }
 
 impl LastMove {
-    pub fn is_ok(&self) -> bool {
-        self.suji > 0 && self.dan > 0
+    pub fn read(txt: &str) -> Result<LastMove, String> {
+        let mut lm = LastMove {
+            from: (0, 0),
+            to: (0, 0),
+            koma: sfen::Koma::from(' ', sfen::Promotion::None),
+            promote: sfen::Promotion::None,
+            dir: String::new(),
+        };
+        let re = regex::Regex::new("(\\d\\d)(\\d\\d)([a-zA-Z][a-zA-Z])").unwrap();
+        match re.captures(txt) {
+            Some(cap) => {
+                let frm: usize = cap.get(1).map_or("", |s| s.as_str()).parse().unwrap();
+                lm.from = (frm / 10, frm % 10);
+                let to: usize = cap.get(2).map_or("", |s| s.as_str()).parse().unwrap();
+                lm.to = (to / 10, to % 10);
+                match sfen::Koma::fromcsa(cap.get(3).map_or("", |s| s.as_str())) {
+                    Some(k) => lm.koma = k,
+                    None => {
+                        return Err(format!("\"{}\" is invalid lastmove about koma.", txt));
+                    }
+                }
+                Ok(lm)
+            }
+            None => Err(format!("\"{}\" is invalid lastmove.", txt)),
+        }
     }
-    pub fn safe(&self) -> Option<(usize, usize)> {
+    pub fn is_ok(&self) -> bool {
+        self.to.0 > 0 && self.to.1 > 0
+    }
+    pub fn topos(&self) -> Option<(usize, usize)> {
         if self.is_ok() {
-            Some((self.suji, self.dan))
+            Some(self.to)
         } else {
             None
         }
@@ -54,7 +84,7 @@ fn help(msg: String) {
     println!("\t--txt  : text style.");
     println!("\t--svg  : svg style.");
     println!("\t--png  : png style.");
-    println!("\t--last[suji][dan] : emphasizing last move.");
+    println!("\t--last 7776FU : emphasizing last move.");
     println!("\t--sente \"John Doe\" : set sente's name.");
     println!("\t--gote \"名無権兵衛\" : set gote's name.");
     println!("\t--title \"title\" : set title.");
@@ -72,16 +102,17 @@ fn main() {
     let mut mo = MyOptions {
         mode: Mode::Text,
         lastmove: LastMove {
-            suji: 0,
-            dan: 0,
+            from: (0, 0),
+            to: (0, 0),
             koma: sfen::Koma::from(' ', sfen::Promotion::None),
+            promote: sfen::Promotion::None,
+            dir: String::new(),
         },
         sname: String::new(),
         gname: String::new(),
         title: String::new(),
     };
 
-    let reg_last = regex::Regex::new("--last([1-9])([1-9])").unwrap();
     let mut lastop = OptionMode::Sfen;
     for e in args[1..].iter() {
         if e == "--svg" {
@@ -99,14 +130,8 @@ fn main() {
             lastop = OptionMode::GoteName;
         } else if e == "--title" {
             lastop = OptionMode::Title;
-        } else if reg_last.is_match(e) {
-            let cap = reg_last.captures(e).unwrap();
-            if cap.len() != 3 {
-                help(format!("invalid option {}.", e));
-                return;
-            }
-            mo.lastmove.suji = cap.get(1).map_or("", |s| s.as_str()).parse().unwrap();
-            mo.lastmove.dan = cap.get(2).map_or("", |s| s.as_str()).parse().unwrap();
+        } else if e == "--last" {
+            lastop = OptionMode::LastMove;
         } else if e.starts_with("--") {
             help(format!("invalid option {}.", e));
             return;
@@ -120,6 +145,18 @@ fn main() {
             } else if lastop == OptionMode::Title {
                 mo.title = e.to_string();
                 lastop = OptionMode::Sfen;
+            } else if lastop == OptionMode::LastMove {
+                match LastMove::read(e) {
+                    Ok(lm) => {
+                        // println!("{:?}", lm);
+                        mo.lastmove = lm;
+                        lastop = OptionMode::Sfen;
+                    }
+                    Err(msg) => {
+                        help(msg);
+                        return;
+                    }
+                }
             } else {
                 txt = e;
             }
@@ -130,7 +167,7 @@ fn main() {
 
     match mo.mode {
         Mode::SVG => {
-            match sfen.to_svg(mo.lastmove.safe(), mo.sname, mo.gname, mo.title) {
+            match sfen.to_svg(mo.lastmove.topos(), mo.sname, mo.gname, mo.title) {
                 Ok(svg) => println!("{}", svg.to_string()),
                 Err(msg) => println!("Error:{}", msg),
             };

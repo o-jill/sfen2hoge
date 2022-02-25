@@ -169,7 +169,7 @@ fn promotest() {
     assert_eq!(prm.is_promoted(), true);
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Koma {
     koma: KomaType,
     promotion: Promotion,
@@ -191,6 +191,31 @@ impl Koma {
             } else {
                 Teban::None
             },
+        }
+    }
+
+    pub fn fromcsa(csa: &str) -> Option<Koma> {
+        let tbl = [
+            ("FU", 'P', Promotion::None),
+            ("KY", 'L', Promotion::None),
+            ("KE", 'N', Promotion::None),
+            ("GI", 'S', Promotion::None),
+            ("KI", 'G', Promotion::None),
+            ("KA", 'B', Promotion::None),
+            ("HI", 'R', Promotion::None),
+            ("OU", 'K', Promotion::None),
+            ("TO", 'P', Promotion::Promoted),
+            ("NY", 'L', Promotion::Promoted),
+            ("NE", 'N', Promotion::Promoted),
+            ("NG", 'S', Promotion::Promoted),
+            // ("KI", 'G', Promotion::None),
+            ("UM", 'B', Promotion::Promoted),
+            ("RY", 'R', Promotion::Promoted),
+            ("GY", 'K', Promotion::None),
+        ];
+        match tbl.iter().find(|e| e.0 == csa) {
+            Some((_csa, ch, prm)) => Some(Koma::from(*ch, *prm)),
+            None => None,
         }
     }
 
