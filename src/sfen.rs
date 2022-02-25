@@ -178,13 +178,18 @@ pub struct Koma {
 
 impl Koma {
     pub fn from(ch: char, promote: Promotion) -> Koma {
+        let re = regex::Regex::new("[PLNSGBRK]").unwrap();
         Koma {
             koma: KomaType::from(ch),
             promotion: promote,
-            teban: if ch.is_uppercase() {
-                Teban::Sente
+            teban: if re.is_match(&ch.to_ascii_uppercase().to_string()) {
+                if ch.is_uppercase() {
+                    Teban::Sente
+                } else {
+                    Teban::Gote
+                }
             } else {
-                Teban::Gote
+                Teban::None
             },
         }
     }
