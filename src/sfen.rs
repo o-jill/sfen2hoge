@@ -163,6 +163,13 @@ impl Promotion {
     pub fn is_notpromoted(&self) -> bool {
         *self == Promotion::NotPromoted
     }
+    pub fn to_string(&self) -> String {
+        match self {
+            Promotion::Promoted => String::from("成"),
+            Promotion::NotPromoted => String::from("不成"),
+            Promotion::None => String::new(),
+        }
+    }
 }
 
 #[test]
@@ -658,7 +665,7 @@ impl Sfen {
         Ok((sentegoma, gotegoma))
     }
 
-    pub fn dump(&self, sn: &str, gn: &str, title: &str) -> String {
+    pub fn dump(&self, sn: &str, gn: &str, title: &str, lm: LastMove) -> String {
         let border = "+---------------------------+\n";
         let dannum = "一二三四五六七八九";
         let mut res = format!("  ９ ８ ７ ６ ５ ４ ３ ２ １\n{}", border);
@@ -709,11 +716,20 @@ impl Sfen {
             }
             Err(msg) => return format!("error in [{}]:{}", self.tegoma, msg),
         }
-        match self.tebanexp() {
-            Ok(msg) => {
-                return res + &format!("手数＝{}　{}\n* {}", self.nteme, msg, title);
+        if lm.is_ok() {
+            match lm.to_string() {
+                Ok(msg) => {
+                    return res + &format!("手数＝{}　{}\n* {}", self.nteme, msg, title);
+                }
+                Err(msg) => msg,
             }
-            Err(msg) => msg,
+        } else {
+            match self.tebanexp() {
+                Ok(msg) => {
+                    return res + &format!("手数＝{}　{}\n* {}", self.nteme, msg, title);
+                }
+                Err(msg) => msg,
+            }
         }
     }
 
@@ -1182,7 +1198,8 @@ impl LastMove {
             promote: sfen::Promotion::None,
             dir: String::new(),
         };
-        let re = regex::Regex::new("(\\d\\d)(\\d\\d)([a-zA-Z][a-zA-Z])([PN]?)([LRAHCY]*)").unwrap();
+        let re =
+            regex::Regex::new("(\\d\\d)(\\d\\d)([a-zA-Z][a-zA-Z])([PN]?)([LRAUHSCY]*)").unwrap();
         match re.captures(txt) {
             Some(cap) => {
                 let frm: usize = cap.get(1).map_or("", |s| s.as_str()).parse().unwrap();
@@ -1220,5 +1237,37 @@ impl LastMove {
         } else {
             None
         }
+    }
+    pub fn to_string(&self) -> Result<String, String> {
+        if !self.is_ok() {
+            return Ok(String::new());
+        }
+
+        let mut ret = String::new();
+        ret += ["１", "２", "３", "４", "５", "６", "７", "８", "９"][self.to.0 - 1];
+        ret += ["一", "二", "三", "四", "五", "六", "七", "八", "九"][self.to.1 - 1];
+        match self.koma.to_kstring() {
+            Some(k) => {
+                ret += &k;
+            }
+            None => return Err(String::from("invalid last move.")),
+        }
+        for e in self.dir.chars() {
+            ret += match e {
+                'R' => "右",
+                'L' => "左",
+                'A' => "上",
+                'U' => "上",
+                'H' => "引",
+                'S' => "下",
+                'D' => "下",
+                'Y' => "寄",
+                'C' => "直",
+                _ => return Err(format!("{} is not supported in LastMove.", e)),
+            };
+            println!("[{} in {}]", e, self.dir);
+        }
+        ret += &self.promote.to_string();
+        Ok(ret + "まで")
     }
 }
