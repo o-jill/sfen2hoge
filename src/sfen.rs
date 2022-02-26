@@ -658,7 +658,7 @@ impl Sfen {
         Ok((sentegoma, gotegoma))
     }
 
-    pub fn dump(&self, sn: &str, gn: &str) -> String {
+    pub fn dump(&self, sn: &str, gn: &str, title: &str) -> String {
         let border = "+---------------------------+\n";
         let dannum = "一二三四五六七八九";
         let mut res = format!("  ９ ８ ７ ６ ５ ４ ３ ２ １\n{}", border);
@@ -711,7 +711,7 @@ impl Sfen {
         }
         match self.tebanexp() {
             Ok(msg) => {
-                return res + &format!("手数＝{}　{}", self.nteme, msg);
+                return res + &format!("手数＝{}　{}\n* {}", self.nteme, msg, title);
             }
             Err(msg) => msg,
         }
