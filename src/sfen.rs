@@ -176,8 +176,16 @@ impl Promotion {
 fn promotest() {
     let prm = Promotion::None;
     assert_eq!(prm.is_promoted(), false);
+    assert_eq!(prm.is_notpromoted(), false);
+    assert_eq!(prm.to_string(), "");
     let prm = Promotion::Promoted;
     assert_eq!(prm.is_promoted(), true);
+    assert_eq!(prm.is_notpromoted(), false);
+    assert_eq!(prm.to_string(), "成");
+    let prm = Promotion::NotPromoted;
+    assert_eq!(prm.is_promoted(), false);
+    assert_eq!(prm.is_notpromoted(), true);
+    assert_eq!(prm.to_string(), "不成");
 }
 
 #[derive(Clone, Debug)]
