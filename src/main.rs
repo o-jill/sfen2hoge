@@ -1,4 +1,4 @@
-use std::io;
+use std::io::{BufRead, Write};
 
 mod sfen;
 mod svgbuilder;
@@ -125,7 +125,50 @@ fn main() {
                 Err(msg) => println!("Error:{}", msg),
             };
         }
-        Mode::PNG => println!("png will be here."),
+        Mode::PNG => {
+            /*let svg2png = match std::process::Command::new("inkscape")
+            .arg("--pipe")
+            .arg("--export-filename=test.png")
+            .arg("--export-type=png")
+            .arg("-b")
+            .arg("white")*/
+            let mut svg2png = match std::process::Command::new("rsvg-convert")
+                .arg("--format=png")
+                .stdin(std::process::Stdio::piped())
+                .stdout(std::process::Stdio::piped())
+                .spawn()
+            {
+                Err(msg) => {
+                    println!("error running png converter... [{}]", msg);
+                    return;
+                }
+                Ok(prcs) => prcs,
+            };
+            let txt;
+            match svg2png.stdin.take().unwrap().write_all(
+                match sfen.to_svg(mo.lastmove.topos(), mo.sname, mo.gname, mo.title) {
+                    Ok(svg) => {
+                        txt = svg.to_string();
+                        txt.as_bytes()
+                    }
+                    Err(msg) => {
+                        println!("{}", msg);
+                        return;
+                    }
+                },
+            ) {
+                Err(msg) => {
+                    println!("error running png converter... [{}]", msg);
+                    return;
+                }
+                Ok(_) => {
+                    // println!("generated png.")
+                }
+            }
+            let w = svg2png.wait_with_output().unwrap();
+            // println!("{} bytes.", w.stdout.len());
+            std::io::stdout().write_all(&w.stdout).unwrap();
+        }
         _ => {
             println!("sfen:{}", txt);
             println!(
