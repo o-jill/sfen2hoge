@@ -151,6 +151,17 @@ fn tagtest() {
     assert_eq!(t.attrib2string(), " checkbox=\"on\"");
     assert_eq!(t.child2string("ghi"), "");
     assert_eq!(t.to_svg("jkl"), "jkl<tag checkbox=\"on\"/>\n");
+
+    t.addchild(Tag::new("child"));
+    assert_eq!(t.attribs.len(), 1);
+    assert_eq!(t.children.len(), 1);
+    assert!(t.has_child());
+    assert_eq!(t.attrib2string(), " checkbox=\"on\"");
+    assert_eq!(t.child2string("hij"), "hij <child/>\n");
+    assert_eq!(
+        t.to_svg("klm"),
+        "klm<tag checkbox=\"on\">\nklm <child/>\nklm</tag>\n"
+    );
 }
 
 pub struct SVG {
