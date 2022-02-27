@@ -124,7 +124,7 @@ fn tagtest() {
     assert_eq!(t.children.len(), 0);
     assert!(!t.has_child());
     assert_eq!(t.attrib2string(), "");
-    assert_eq!(t.child2string("abc"), "abc");
+    assert_eq!(t.child2string("abc"), "");
     assert_eq!(t.to_svg("def"), "def<tag />\n");
 
     t.value = String::from("vaaluue");
@@ -133,7 +133,7 @@ fn tagtest() {
     assert_eq!(t.children.len(), 0);
     assert!(!t.has_child());
     assert_eq!(t.attrib2string(), "");
-    assert_eq!(t.child2string("bcd"), "bcd");
+    assert_eq!(t.child2string("bcd"), "");
     assert_eq!(t.to_svg("efg"), "efg<tag >vaaluue</tag>\n");
 
     t.newattrib("checkbox", "on");
@@ -141,7 +141,7 @@ fn tagtest() {
     assert_eq!(t.children.len(), 0);
     assert!(!t.has_child());
     assert_eq!(t.attrib2string(), " checkbox=\"on\"");
-    assert_eq!(t.child2string("cde"), "cde");
+    assert_eq!(t.child2string("cde"), "");
     assert_eq!(t.to_svg("fgh"), "fgh<tag checkbox=\"on\">vaaluue</tag>\n");
 
     t.value = String::new();
@@ -149,7 +149,7 @@ fn tagtest() {
     assert_eq!(t.children.len(), 0);
     assert!(!t.has_child());
     assert_eq!(t.attrib2string(), " checkbox=\"on\"");
-    assert_eq!(t.child2string("ghi"), "ghi");
+    assert_eq!(t.child2string("ghi"), "");
     assert_eq!(t.to_svg("jkl"), "jkl<tag checkbox=\"on\" />\n");
 }
 
