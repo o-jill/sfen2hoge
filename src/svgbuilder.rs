@@ -15,7 +15,7 @@ impl Attrib {
     }
     pub fn to_string(&self) -> String {
         if self.val.is_empty() {
-            self.name.clone()
+            format!(" {}", self.name)
         } else {
             format!(" {}=\"{}\"", self.name, self.val)
         }
