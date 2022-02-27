@@ -1,5 +1,5 @@
 [package]
-name = "sfenreader"
+name = "sfen2hoge"
 version = "0.1.0"
 edition = "2021"
 
