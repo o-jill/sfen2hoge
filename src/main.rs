@@ -28,20 +28,20 @@ struct MyOptions {
 
 fn help(msg: String) {
     if !msg.is_empty() {
-        println!("{}", msg);
+        eprintln!("{}", msg);
     }
-    println!("sfen2reader sfen [options]");
-    println!("sfen:");
-    println!("ex.\t\"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\"");
-    println!("options:");
-    println!("\t--txt  : text style.");
-    println!("\t--svg  : svg style.");
-    println!("\t--png  : png style.");
-    println!("\t--last 7776FU : emphasizing last move.");
-    println!("\t--sente \"John Doe\" : set sente's name.");
-    println!("\t--gote \"名無権兵衛\" : set gote's name.");
-    println!("\t--title \"title\" : set title.");
-    println!("\t--help : show this help.");
+    eprintln!("sfen2reader sfen [options]");
+    eprintln!("sfen:");
+    eprintln!("ex.\t\"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\"");
+    eprintln!("options:");
+    eprintln!("\t--txt  : text style.");
+    eprintln!("\t--svg  : svg style.");
+    eprintln!("\t--png  : png style.");
+    eprintln!("\t--last 7776FU : emphasizing last move.");
+    eprintln!("\t--sente \"John Doe\" : set sente's name.");
+    eprintln!("\t--gote \"名無権兵衛\" : set gote's name.");
+    eprintln!("\t--title \"title\" : set title.");
+    eprintln!("\t--help : show this help.");
 }
 
 fn main() {
@@ -122,7 +122,10 @@ fn main() {
         Mode::SVG => {
             match sfen.to_svg(mo.lastmove.topos(), mo.sname, mo.gname, mo.title) {
                 Ok(svg) => println!("{}", svg.to_string()),
-                Err(msg) => println!("Error:{}", msg),
+                Err(msg) => {
+                    help(msg);
+                    return;
+                }
             };
         }
         Mode::PNG => {
@@ -139,7 +142,7 @@ fn main() {
                 .spawn()
             {
                 Err(msg) => {
-                    println!("error running png converter... [{}]", msg);
+                    help(format!("error running png converter... [{}]", msg));
                     return;
                 }
                 Ok(prcs) => prcs,
@@ -152,13 +155,13 @@ fn main() {
                         txt.as_bytes()
                     }
                     Err(msg) => {
-                        println!("{}", msg);
+                        help(msg);
                         return;
                     }
                 },
             ) {
                 Err(msg) => {
-                    println!("error running png converter... [{}]", msg);
+                    help(format!("error running png converter... [{}]", msg));
                     return;
                 }
                 Ok(_) => {
