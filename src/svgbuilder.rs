@@ -69,7 +69,7 @@ impl Tag {
         self.addattrib(Attrib::from(nm, val));
     }
 
-    pub fn to_svg(&self, indent: String) -> String {
+    pub fn to_svg(&self, indent: &str) -> String {
         if self.children.len() > 0 {
             format!(
                 "{ind}<{nm}{val}{atr}>\n{chld}{ind}</{nm}>\n",
@@ -103,16 +103,29 @@ impl Tag {
             .collect::<Vec<String>>()
             .join("")
     }
-    pub fn child2string(&self, indent: String) -> String {
+    pub fn child2string(&self, indent: &str) -> String {
         self.children
             .iter()
-            .map(|c| c.to_svg(format!("{} ", indent)))
+            .map(|c| c.to_svg(&format!("{} ", indent)))
             .collect::<Vec<String>>()
             .join("")
     }
     pub fn has_child(&self) -> bool {
         !self.children.is_empty()
     }
+}
+
+#[test]
+fn tagtest() {
+    let t = Tag::new("tag");
+    assert_eq!(t.name, "tag");
+    assert_eq!(t.value, "");
+    assert_eq!(t.attribs.len(), 0);
+    assert_eq!(t.children.len(), 0);
+    assert!(!t.has_child());
+    assert_eq!(t.attrib2string(), "");
+    assert_eq!(t.child2string(""), "");
+    assert_eq!(t.to_svg(""), "<tag />\n");
 }
 
 pub struct SVG {
@@ -137,6 +150,6 @@ impl SVG {
         svg
     }
     pub fn to_string(&self) -> String {
-        format!("<?xml version='1.0'?>\n{}", self.tag.to_svg(String::new()))
+        format!("<?xml version='1.0'?>\n{}", self.tag.to_svg(""))
     }
 }
