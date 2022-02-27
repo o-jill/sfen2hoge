@@ -84,7 +84,7 @@ impl Tag {
                 ind = indent
             )
         } else if self.value.is_empty() {
-            format!("{}<{}{} />\n", indent, self.name, self.attrib2string(),)
+            format!("{}<{}{}/>\n", indent, self.name, self.attrib2string(),)
         } else {
             format!(
                 "{}<{}{}>{}</{}>\n",
@@ -125,7 +125,7 @@ fn tagtest() {
     assert!(!t.has_child());
     assert_eq!(t.attrib2string(), "");
     assert_eq!(t.child2string("abc"), "");
-    assert_eq!(t.to_svg("def"), "def<tag />\n");
+    assert_eq!(t.to_svg("def"), "def<tag/>\n");
 
     t.value = String::from("vaaluue");
     assert_eq!(t.value, "vaaluue");
@@ -134,7 +134,7 @@ fn tagtest() {
     assert!(!t.has_child());
     assert_eq!(t.attrib2string(), "");
     assert_eq!(t.child2string("bcd"), "");
-    assert_eq!(t.to_svg("efg"), "efg<tag >vaaluue</tag>\n");
+    assert_eq!(t.to_svg("efg"), "efg<tag>vaaluue</tag>\n");
 
     t.newattrib("checkbox", "on");
     assert_eq!(t.attribs.len(), 1);
@@ -150,7 +150,7 @@ fn tagtest() {
     assert!(!t.has_child());
     assert_eq!(t.attrib2string(), " checkbox=\"on\"");
     assert_eq!(t.child2string("ghi"), "");
-    assert_eq!(t.to_svg("jkl"), "jkl<tag checkbox=\"on\" />\n");
+    assert_eq!(t.to_svg("jkl"), "jkl<tag checkbox=\"on\"/>\n");
 }
 
 pub struct SVG {
