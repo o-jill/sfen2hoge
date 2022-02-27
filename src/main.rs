@@ -1,4 +1,4 @@
-use std::io::{BufRead, Write};
+use std::io::Write;
 
 mod sfen;
 mod svgbuilder;
