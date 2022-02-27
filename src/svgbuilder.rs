@@ -22,6 +22,25 @@ impl Attrib {
     }
 }
 
+#[test]
+fn attribtest() {
+    let a = Attrib::new("test", String::from("val1"));
+    assert_eq!(a.name, "test");
+    assert_eq!(a.val, "val1");
+    let a = Attrib::from("atrib", "atai");
+    assert_eq!(a.name, "atrib");
+    assert_eq!(a.val, "atai");
+    assert_eq!(a.to_string(), " atrib=\"atai\"");
+    let a = Attrib::from("checked", "");
+    assert_eq!(a.name, "checked");
+    assert_eq!(a.val, "");
+    assert_eq!(a.to_string(), " checked");
+    let a = Attrib::new("noval", String::new());
+    assert_eq!(a.name, "noval");
+    assert_eq!(a.val, "");
+    assert_eq!(a.to_string(), " noval");
+}
+
 pub struct Tag {
     name: String,
     pub value: String,
