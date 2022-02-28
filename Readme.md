@@ -4,4 +4,6 @@
 
 sfen2hoge is a converter from sfen to text, svg and png.  
 
+rsvg-convert is used to generate png.
+
 ---
