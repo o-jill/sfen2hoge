@@ -23,6 +23,7 @@ fn help(msg: String) {
         \t--title \"title\" : set title.\n\
         \t--help : show this help."
     );
+    std::process::exit(-1);
 }
 
 fn main() {
@@ -42,7 +43,7 @@ fn main() {
                 txt = sfen
             }
         }
-        Err(msg) => return help(msg),
+        Err(msg) => help(msg),
     }
 
     let sfen = sfen::Sfen::new(&txt);
@@ -53,7 +54,6 @@ fn main() {
                 Ok(svg) => println!("{}", svg.to_string()),
                 Err(msg) => {
                     help(msg);
-                    return;
                 }
             };
         }
@@ -61,7 +61,7 @@ fn main() {
             match sfen.to_svg(mo.lastmove.topos(), mo.sname, mo.gname, mo.title) {
                 Ok(svg) => {
                     match svg2png::start_rsvg(svg.to_string()) {
-                    // match svg2png::start_inkscape(svg.to_string()) {
+                        // match svg2png::start_inkscape(svg.to_string()) {
                         Err(msg) => {
                             help(msg);
                         }
