@@ -1,30 +1,8 @@
 use std::io::Write;
 
+mod myoptions;
 mod sfen;
 mod svgbuilder;
-
-enum Mode {
-    Text,
-    SVG,
-    PNG,
-}
-
-#[derive(PartialEq)]
-enum OptionMode {
-    Sfen,
-    SenteName,
-    GoteName,
-    Title,
-    LastMove,
-}
-
-struct MyOptions {
-    pub mode: Mode,
-    pub lastmove: sfen::LastMove,
-    pub sname: String,
-    pub gname: String,
-    pub title: String,
-}
 
 fn help(msg: String) {
     if !msg.is_empty() {
@@ -46,80 +24,28 @@ fn help(msg: String) {
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    // let txt = "9/9/9/9/9/9/9/9/9 w - 0";
+    let mut txt = String::from("9/9/9/9/9/9/9/9/9 w - 0");
     // let txt = "lnsgkgsnl/1r5b1/p1ppppp1p/9/9/9/P1PPPPP1P/1B2K2R1/LNSG1GSNL w 2P2p 2";
     // let mut txt = "ln+sgkgsnl/1+r5b1/p1pp+ppp1p/9/9/9/P1PPP+PP1+P/1+B2K2R1/LNS+G1GSNL w 2P2p 2";
-    let mut txt = "ln+sgkgsnl/1+r5b1/p1pp+ppp1p/9/9/9/P1PPP+PP1+P/1+B2K2R1/LNS+G1GSNL w 18P4L4N4S4G2B2R18p4l4n4s4g2b2r 2";
+    // let mut txt = "ln+sgkgsnl/1+r5b1/p1pp+ppp1p/9/9/9/P1PPP+PP1+P/1+B2K2R1/LNS+G1GSNL \
+    //               w 18P4L4N4S4G2B2R18p4l4n4s4g2b2r 2";
     // let txt = "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1";
 
-    let mut mo = MyOptions {
-        mode: Mode::Text,
-        lastmove: sfen::LastMove {
-            from: (0, 0),
-            to: (0, 0),
-            koma: sfen::Koma::from(' ', sfen::Promotion::None),
-            promote: sfen::Promotion::None,
-            dir: String::new(),
-        },
-        sname: String::new(),
-        gname: String::new(),
-        title: String::new(),
-    };
+    let mut mo = myoptions::MyOptions::new();
 
-    let mut lastop = OptionMode::Sfen;
-    for e in args[1..].iter() {
-        if e == "--svg" {
-            mo.mode = Mode::SVG;
-        } else if e == "--png" {
-            mo.mode = Mode::PNG;
-        } else if e == "--txt" {
-            mo.mode = Mode::Text;
-        } else if e == "--help" {
-            help(String::new());
-            return;
-        } else if e == "--sente" {
-            lastop = OptionMode::SenteName;
-        } else if e == "--gote" {
-            lastop = OptionMode::GoteName;
-        } else if e == "--title" {
-            lastop = OptionMode::Title;
-        } else if e == "--last" {
-            lastop = OptionMode::LastMove;
-        } else if e.starts_with("--") {
-            help(format!("invalid option {}.", e));
-            return;
-        } else {
-            if lastop == OptionMode::SenteName {
-                mo.sname = e.to_string();
-                lastop = OptionMode::Sfen;
-            } else if lastop == OptionMode::GoteName {
-                mo.gname = e.to_string();
-                lastop = OptionMode::Sfen;
-            } else if lastop == OptionMode::Title {
-                mo.title = e.to_string();
-                lastop = OptionMode::Sfen;
-            } else if lastop == OptionMode::LastMove {
-                match sfen::LastMove::read(e) {
-                    Ok(lm) => {
-                        // println!("{:?}", lm);
-                        mo.lastmove = lm;
-                        lastop = OptionMode::Sfen;
-                    }
-                    Err(msg) => {
-                        help(msg);
-                        return;
-                    }
-                }
-            } else {
-                txt = e;
+    match mo.read_options(args) {
+        Ok(sfen) => {
+            if !txt.is_empty() {
+                txt = sfen
             }
         }
+        Err(msg) => return help(msg),
     }
 
-    let sfen = sfen::Sfen::new(txt);
+    let sfen = sfen::Sfen::new(&txt);
 
     match mo.mode {
-        Mode::SVG => {
+        myoptions::Mode::SVG => {
             match sfen.to_svg(mo.lastmove.topos(), mo.sname, mo.gname, mo.title) {
                 Ok(svg) => println!("{}", svg.to_string()),
                 Err(msg) => {
@@ -128,7 +54,7 @@ fn main() {
                 }
             };
         }
-        Mode::PNG => {
+        myoptions::Mode::PNG => {
             /*let svg2png = match std::process::Command::new("inkscape")
             .arg("--pipe")
             .arg("--export-filename=test.png")
