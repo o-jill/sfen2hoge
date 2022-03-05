@@ -7,7 +7,7 @@ sfen2hoge is a converter from sfen to text, svg and png.
 rsvg-convert (and inkscape) are supported to generate png.
 
 ## command help:  
-sfen2reader sfen [options]  
+sfen2hoge sfen [options]  
 sfen:  
 ex.     "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"  
 options:  
