@@ -24,8 +24,8 @@ options:
 * png  
 ./sfen2hoge "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1" --png --last 0065FU --sente "John Doe" --gote "日 本 語" --title "my kyokumen" >mypng.png
 * svg  
-./sfen2hoge "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1" --png --last 0099KY --sente "John Doe" --gote "日 本 語" --title "my svg kyokumen" >test.svg
+./sfen2hoge "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1" --svg --last 0099KY --sente "John Doe" --gote "日 本 語" --title "my svg kyokumen" >test.svg
 * text to terminal  
-./sfen2hoge "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1" --png --last 0065RYRH --sente "John Doe" --gote "日 本 語" --title "コメントだよ"
+./sfen2hoge "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1" --txt --last 0097FU --sente "John Doe" --gote "日 本 語" --title "コメントだよ"
 
 ---
