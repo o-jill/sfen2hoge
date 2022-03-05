@@ -1273,7 +1273,7 @@ impl LastMove {
                 'C' => "直",
                 _ => return Err(format!("{} is not supported in LastMove.", e)),
             };
-            println!("[{} in {}]", e, self.dir);
+            // println!("[{} in {}]", e, self.dir);
         }
         ret += &self.promote.to_string();
         Ok(ret + "まで")
