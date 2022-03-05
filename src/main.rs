@@ -2,6 +2,7 @@ use std::io::Write;
 
 mod myoptions;
 mod sfen;
+mod svg2png;
 mod svgbuilder;
 
 fn help(msg: String) {
@@ -57,48 +58,23 @@ fn main() {
             };
         }
         myoptions::Mode::PNG => {
-            /*let svg2png = match std::process::Command::new("inkscape")
-            .arg("--pipe")
-            .arg("--export-filename=test.png")
-            .arg("--export-type=png")
-            .arg("-b")
-            .arg("white")*/
-            let mut svg2png = match std::process::Command::new("rsvg-convert")
-                .arg("--format=png")
-                .stdin(std::process::Stdio::piped())
-                .stdout(std::process::Stdio::piped())
-                .spawn()
-            {
-                Err(msg) => {
-                    help(format!("error running png converter... [{}]", msg));
-                    return;
-                }
-                Ok(prcs) => prcs,
-            };
-            let txt;
-            match svg2png.stdin.take().unwrap().write_all(
-                match sfen.to_svg(mo.lastmove.topos(), mo.sname, mo.gname, mo.title) {
-                    Ok(svg) => {
-                        txt = svg.to_string();
-                        txt.as_bytes()
+            match sfen.to_svg(mo.lastmove.topos(), mo.sname, mo.gname, mo.title) {
+                Ok(svg) => {
+                    match svg2png::start_rsvg(svg.to_string()) {
+                    // match svg2png::start_inkscape(svg.to_string()) {
+                        Err(msg) => {
+                            help(msg);
+                        }
+                        Ok(png) => {
+                            // println!("generated png.")
+                            std::io::stdout().write_all(&png).unwrap();
+                        }
                     }
-                    Err(msg) => {
-                        help(msg);
-                        return;
-                    }
-                },
-            ) {
-                Err(msg) => {
-                    help(format!("error running png converter... [{}]", msg));
-                    return;
                 }
-                Ok(_) => {
-                    // println!("generated png.")
+                Err(msg) => {
+                    help(msg);
                 }
             }
-            let w = svg2png.wait_with_output().unwrap();
-            // println!("{} bytes.", w.stdout.len());
-            std::io::stdout().write_all(&w.stdout).unwrap();
         }
         _ => {
             println!("sfen:{}", txt);
