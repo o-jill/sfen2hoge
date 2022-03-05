@@ -8,18 +8,20 @@ fn help(msg: String) {
     if !msg.is_empty() {
         eprintln!("{}", msg);
     }
-    eprintln!("sfen2reader sfen [options]");
-    eprintln!("sfen:");
-    eprintln!("ex.\t\"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\"");
-    eprintln!("options:");
-    eprintln!("\t--txt  : text style.");
-    eprintln!("\t--svg  : svg style.");
-    eprintln!("\t--png  : png style.");
-    eprintln!("\t--last 7776FU : emphasizing last move.");
-    eprintln!("\t--sente \"John Doe\" : set sente's name.");
-    eprintln!("\t--gote \"名無権兵衛\" : set gote's name.");
-    eprintln!("\t--title \"title\" : set title.");
-    eprintln!("\t--help : show this help.");
+    eprintln!(
+        "sfen2reader sfen [options]\n\
+        sfen:\n\
+        ex.\t\"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\"\n\
+        options:\n\
+        \t--txt  : text style.\n\
+        \t--svg  : svg style.\n\
+        \t--png  : png style.\n\
+        \t--last 7776FU : emphasizing last move.\n\
+        \t--sente \"John Doe\" : set sente's name.\n\
+        \t--gote \"名無権兵衛\" : set gote's name.\n\
+        \t--title \"title\" : set title.\n\
+        \t--help : show this help."
+    );
 }
 
 fn main() {
