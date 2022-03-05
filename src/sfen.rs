@@ -1246,11 +1246,14 @@ impl LastMove {
             None
         }
     }
+    pub fn is_from_komadai(&self) -> bool {
+        self.from.0 == 0 && self.from.1 == 0
+    }
     pub fn to_string(&self) -> Result<String, String> {
         if !self.is_ok() {
             return Ok(String::new());
         }
-
+        const INVALID_MSG: &str = "invalid last move.";
         let mut ret = String::new();
         ret += ["１", "２", "３", "４", "５", "６", "７", "８", "９"][self.to.0 - 1];
         ret += ["一", "二", "三", "四", "五", "六", "七", "八", "九"][self.to.1 - 1];
@@ -1258,24 +1261,31 @@ impl LastMove {
             Some(k) => {
                 ret += &k;
             }
-            None => return Err(String::from("invalid last move.")),
+            None => return Err(String::from(INVALID_MSG)),
         }
-        for e in self.dir.chars() {
-            ret += match e {
-                'R' => "右",
-                'L' => "左",
-                'A' => "上",
-                'U' => "上",
-                'H' => "引",
-                'S' => "下",
-                'D' => "下",
-                'Y' => "寄",
-                'C' => "直",
-                _ => return Err(format!("{} is not supported in LastMove.", e)),
-            };
-            // println!("[{} in {}]", e, self.dir);
+        if self.is_from_komadai() {
+            ret += "打";
+            if !self.dir.is_empty() || self.promote.is_promoted() {
+                return Err(String::from(INVALID_MSG));
+            }
+        } else {
+            for e in self.dir.chars() {
+                ret += match e {
+                    'R' => "右",
+                    'L' => "左",
+                    'A' => "上",
+                    'U' => "上",
+                    'H' => "引",
+                    'S' => "下",
+                    'D' => "下",
+                    'Y' => "寄",
+                    'C' => "直",
+                    _ => return Err(format!("{} is not supported in LastMove.", e)),
+                };
+                // println!("[{} in {}]", e, self.dir);
+            }
+            ret += &self.promote.to_string();
         }
-        ret += &self.promote.to_string();
         Ok(ret + "まで")
     }
 }
