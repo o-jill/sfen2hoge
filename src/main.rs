@@ -10,7 +10,7 @@ fn help(msg: String) {
         eprintln!("{}", msg);
     }
     eprintln!(
-        "sfen2reader sfen [options]\n\
+        "sfen2hoge sfen [options]\n\
         sfen:\n\
         ex.\t\"lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1\"\n\
         options:\n\
